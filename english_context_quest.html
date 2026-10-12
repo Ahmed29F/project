@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Context Quest: Mega Goal 3 Interactive Simulator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Tajawal:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #090d16;
+            --card-bg: rgba(18, 26, 44, 0.85);
+            --border: rgba(99, 102, 241, 0.25);
+            --primary: #6366f1;
+            --primary-glow: rgba(99, 102, 241, 0.4);
+            --accent: #ec4899;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            background-image: radial-gradient(circle at 80% 20%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
+                              radial-gradient(circle at 20% 80%, rgba(236, 72, 153, 0.1) 0%, transparent 50%);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        header {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            backdrop-filter: blur(12px);
+        }
+
+        .header-title h1 {
+            font-size: 1.8rem;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-title span.glow {
+            color: var(--primary);
+            text-shadow: 0 0 15px var(--primary-glow);
+        }
+
+        .badge-header {
+            background: rgba(99, 102, 241, 0.15);
+            color: var(--primary);
+            border: 1px solid var(--primary);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+        }
+
+        /* Top Progress and Stats Bar */
+        .stats-bar {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.95rem;
+        }
+
+        .progress-track {
+            width: 200px;
+            height: 10px;
+            background: #1e293b;
+            border-radius: 5px;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            width: 20%;
+            transition: width 0.4s ease;
+        }
+
+        /* Game Stage Area */
+        .game-stage {
+            display: grid;
+            grid-template-columns: 1fr 340px;
+            gap: 20px;
+            flex: 1;
+        }
+
+        @media (max-width: 600px) {
+            .dialogue-box { flex-direction: column; align-items: center; text-align: center; }
+            .dialogue-arabic-hint { text-align: center; }
+            header { flex-direction: column; text-align: center; }
+        }
+        @media (max-width: 900px) {
+            .game-stage { grid-template-columns: 1fr; }
+        }
+
+        .story-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            backdrop-filter: blur(12px);
+            position: relative;
+        }
+
+        .scenario-tag {
+            align-self: flex-start;
+            background: rgba(236, 72, 153, 0.15);
+            color: var(--accent);
+            border: 1px solid var(--accent);
+            padding: 4px 12px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .dialogue-box {
+            background: rgba(15, 23, 42, 0.7);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 24px;
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+        }
+
+        .avatar {
+            width: 56px;
+            height: 56px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            flex-shrink: 0;
+            box-shadow: 0 4px 15px var(--primary-glow);
+        }
+
+        .dialogue-content {
+            flex: 1;
+        }
+
+        .speaker-name {
+            font-weight: 800;
+            font-size: 1.05rem;
+            color: var(--primary);
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .speech-btn {
+            background: transparent;
+            border: none;
+            color: var(--accent);
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: transform 0.2s;
+        }
+        .speech-btn:hover { transform: scale(1.2); }
+
+        .dialogue-text {
+            font-size: 1.15rem;
+            line-height: 1.6;
+            color: var(--text);
+        }
+
+        .dialogue-arabic-hint {
+            font-family: 'Tajawal', sans-serif;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-top: 8px;
+            direction: rtl;
+            text-align: right;
+        }
+
+        /* Choice Buttons */
+        .choices-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .choice-btn {
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px 20px;
+            color: var(--text);
+            text-align: left;
+            font-size: 1.05rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .choice-btn:hover {
+            border-color: var(--primary);
+            background: rgba(99, 102, 241, 0.15);
+            transform: translateX(4px);
+        }
+
+        .choice-btn.correct {
+            border-color: var(--success);
+            background: rgba(16, 185, 129, 0.2);
+            color: #6ee7b7;
+        }
+
+        .choice-btn.incorrect {
+            border-color: var(--accent);
+            background: rgba(236, 72, 153, 0.2);
+            color: #f472b6;
+        }
+
+        .feedback-box {
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            display: none;
+            line-height: 1.6;
+            font-size: 0.95rem;
+        }
+
+        .feedback-box.show { display: block; }
+
+        /* Sidebar Info */
+        .side-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .side-title {
+            font-size: 1.1rem;
+            color: var(--primary);
+            font-weight: 700;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 8px;
+        }
+
+        .badge-list {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+
+        .badge-item {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            opacity: 0.4;
+            transition: all 0.3s;
+        }
+
+        .badge-item.unlocked {
+            opacity: 1;
+            border-color: var(--warning);
+            background: rgba(245, 158, 11, 0.1);
+        }
+
+        .badge-icon {
+            font-size: 1.5rem;
+        }
+
+        .next-btn {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            padding: 14px;
+            font-size: 1.05rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 15px var(--primary-glow);
+            transition: opacity 0.2s;
+            display: none;
+        }
+        .next-btn:hover { opacity: 0.9; }
+
+        /* Teacher Report Modal */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.85);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            z-index: 1000;
+        }
+        .modal.show { display: flex; }
+
+        .modal-content {
+            background: #111827;
+            border: 2px solid var(--primary);
+            border-radius: 20px;
+            max-width: 600px;
+            width: 100%;
+            padding: 35px;
+            box-shadow: 0 0 50px rgba(99, 102, 241, 0.4);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-title">
+            <h1>⚡ Context <span class="glow">Quest</span></h1>
+            <p style="font-size: 0.95rem; color: var(--text-muted); margin-top: 4px;">Interactive Scenario Simulator for Mega Goal 3 (Units 1 - 4)</p>
+        </div>
+        <span class="badge-header">Grade 12 | Saudi Curriculum</span>
+    </header>
+
+    <!-- Stats Bar -->
+    <div class="stats-bar">
+        <div class="stat-item">
+            <span>🎯 Mission Progress:</span>
+            <div class="progress-track">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <strong id="progressTxt">1 / 4</strong>
+        </div>
+        <div class="stat-item">
+            <span>💎 Fluency XP:</span>
+            <strong id="xpTxt" style="color: var(--warning); font-size: 1.2rem;">0 XP</strong>
+        </div>
+        <div class="stat-item">
+            <span>❤️ Accuracy:</span>
+            <strong id="accuracyTxt" style="color: var(--success); font-size: 1.1rem;">100%</strong>
+        </div>
+    </div>
+
+    <!-- Main Game Grid -->
+    <div class="game-stage">
+        <!-- Dialogue & Choices Card -->
+        <div class="story-card">
+            <div class="scenario-tag" id="scenarioTag">Unit 1: Connected World</div>
+
+            <div class="dialogue-box">
+                <div class="avatar" id="avatarIcon">🤖</div>
+                <div class="dialogue-content">
+                    <div class="speaker-name">
+                        <span id="speakerName">AI Mentor (Aura)</span>
+                        <button class="speech-btn" id="listenBtn" title="Listen with Native Speech">🔊 Listen</button>
+                    </div>
+                    <div class="dialogue-text" id="dialogueText">Loading scenario...</div>
+                    <div class="dialogue-arabic-hint" id="arabicHint">...</div>
+                </div>
+            </div>
+
+            <div class="choices-container" id="choicesContainer">
+                <!-- Dynamically filled -->
+            </div>
+
+            <div class="feedback-box" id="feedbackBox"></div>
+
+            <button class="next-btn" id="nextBtn">Continue to Next Stage ➔</button>
+        </div>
+
+        <!-- Sidebar Achievements -->
+        <div class="side-card">
+            <div class="side-title">🏆 Academic Badges</div>
+            <div class="badge-list">
+                <div class="badge-item" id="badge1">
+                    <div class="badge-icon">🌐</div>
+                    <div>
+                        <strong>Connected Thinker</strong>
+                        <p style="font-size: 0.8rem; color: var(--text-muted);">Master Passive & Future Forms</p>
+                    </div>
+                </div>
+                <div class="badge-item" id="badge2">
+                    <div class="badge-icon">💼</div>
+                    <div>
+                        <strong>Career Strategist</strong>
+                        <p style="font-size: 0.8rem; color: var(--text-muted);">Use Conditionals & Modals</p>
+                    </div>
+                </div>
+                <div class="badge-item" id="badge3">
+                    <div class="badge-icon">✨</div>
+                    <div>
+                        <strong>Visionary Diplomat</strong>
+                        <p style="font-size: 0.8rem; color: var(--text-muted);">Express Wishes & Past Regrets</p>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top: auto; font-size: 0.85rem; color: var(--text-muted); line-height: 1.5; border-top: 1px solid var(--border); padding-top: 15px;">
+                💡 <em>Teacher Tip:</em> Each answer tests a grammar and vocabulary target from Mega Goal 3 student book.
+            </div>
+        </div>
+    </div>
+
+    <!-- Final Evaluation Modal -->
+    <div class="modal" id="reportModal">
+        <div class="modal-content">
+            <h2 style="color: var(--primary); font-size: 2rem; margin-bottom: 10px;">🎉 Mission Complete!</h2>
+            <p style="color: var(--text-muted); margin-bottom: 25px;">Here is your performance summary for your English teacher:</p>
+            
+            <div style="background: rgba(15, 23, 42, 0.8); border: 1px solid var(--border); border-radius: 12px; padding: 20px; text-align: left; margin-bottom: 25px; line-height: 1.8;">
+                <p>👤 <strong>Student Level:</strong> Third Secondary (Mega Goal 3)</p>
+                <p>⭐ <strong>Total XP Earned:</strong> <span id="finalXp" style="color: var(--warning); font-weight: bold;"></span></p>
+                <p>📈 <strong>Grammar Accuracy:</strong> <span id="finalAccuracy" style="color: var(--success); font-weight: bold;"></span></p>
+                <p>🎖️ <strong>Proficiency Level:</strong> Advanced Communicator</p>
+            </div>
+
+            <button class="choice-btn" style="text-align: center; justify-content: center; width: 100%;" onclick="location.reload()">
+                🔄 Play Again
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const scenarios = [
+            {
+                unit: "Unit 1: Connected World (Passive Voice & AI)",
+                speaker: "Cyber Systems Director",
+                avatar: "🛰️",
+                dialogue: "Our new automated satellite network is experiencing delays. Can you report how the data packets are handled?",
+                arabic: "إدارة الأنظمة تطلب منك تقريراً: كيف يتم التعامل مع حزم البيانات في الشبكة الفضائية الجديدة؟",
+                choices: [
+                    {
+                        text: "Data packets are automatically analyzed and encrypted by the cloud server.",
+                        correct: true,
+                        explain: "✅ Excellent! Correct use of Present Simple Passive (are + past participle) describing systematic processes."
+                    },
+                    {
+                        text: "Data packets analyzes and encrypts automatically by cloud server.",
+                        correct: false,
+                        explain: "❌ Incorrect: The subject (data packets) receives the action, so Passive voice is required."
+                    },
+                    {
+                        text: "Data packets were been analyzed automatically yesterday.",
+                        correct: false,
+                        explain: "❌ Incorrect: 'were been' is grammatically incorrect structure."
+                    }
+                ]
+            },
+            {
+                unit: "Unit 2: Careers & Aspirations (Past Unreal Conditional)",
+                speaker: "Tech Summit Interviewer",
+                avatar: "💼",
+                dialogue: "You achieved a great score in the robotics contest! What would have happened if you hadn't joined the team?",
+                arabic: "سؤال المقابلة: ماذا كان سيحدث لو لم تنضم إلى فريق مسابقة الروبوت؟",
+                choices: [
+                    {
+                        text: "If I hadn't joined the team, I wouldn't have learned advanced coding.",
+                        correct: true,
+                        explain: "✅ Perfect! Third Conditional (If + Past Perfect, would have + V3) expressing an unreal past situation."
+                    },
+                    {
+                        text: "If I don't join the team, I won't have learned coding.",
+                        correct: false,
+                        explain: "❌ Incorrect: This mixes first and third conditional forms for a past event."
+                    },
+                    {
+                        text: "If I didn't join the team, I would not learn coding.",
+                        correct: false,
+                        explain: "❌ Incorrect: Second conditional refers to hypothetical present/future, not past achievements."
+                    }
+                ]
+            },
+            {
+                unit: "Unit 3: Complaints & Issues (Causative & Need to be done)",
+                speaker: "Lab Maintenance Supervisor",
+                avatar: "🔧",
+                dialogue: "Look at the quantum sensor in Lab 4; it stopped recording properly yesterday!",
+                arabic: "مشرف الصيانة: انظر إلى المستشعر في معمل 4، لقد توقف عن التسجيل بالأمس!",
+                choices: [
+                    {
+                        text: "The sensor needs to be calibrated immediately, or we must have it repaired.",
+                        correct: true,
+                        explain: "✅ Correct! 'Needs to be + V3' and causative 'have it repaired' fit the exact grammar of Unit 3."
+                    },
+                    {
+                        text: "The sensor needs calibrate immediately before breaking.",
+                        correct: false,
+                        explain: "❌ Incorrect: After 'needs', use either 'to be + past participle' or a gerund (needs calibrating)."
+                    },
+                    {
+                        text: "We should repaired it ourself without tools.",
+                        correct: false,
+                        explain: "❌ Incorrect: Modal 'should' must be followed by base form (should repair)."
+                    }
+                ]
+            },
+            {
+                unit: "Unit 4: Wishful Thinking (Wishes & Regrets)",
+                speaker: "Delegation Leader",
+                avatar: "🌟",
+                dialogue: "We are presenting our project to the UNESCO committee in one hour! Any final thoughts?",
+                arabic: "رئيس الوفد: سنقدم المشروع بعد ساعة أمام اللجنة الدولية! ما هو رأيك الأخير؟",
+                choices: [
+                    {
+                        text: "I wish we had prepared more visual slides yesterday, but we are ready to shine!",
+                        correct: true,
+                        explain: "✅ Superb! 'Wish + had + V3' expresses a regret about the past."
+                    },
+                    {
+                        text: "I wish we prepare more slides yesterday so we have time.",
+                        correct: false,
+                        explain: "❌ Incorrect: Past regrets cannot take simple present tense after 'wish'."
+                    },
+                    {
+                        text: "I hope we had prepared more yesterday.",
+                        correct: false,
+                        explain: "❌ Incorrect: 'Hope' is used for possible future outcomes, while 'Wish' is used for past regrets."
+                    }
+                ]
+            }
+        ];
+
+        let currentIdx = 0;
+        let scoreXp = 0;
+        let attempts = 0;
+        let correctCount = 0;
+
+        const scenarioTag = document.getElementById('scenarioTag');
+        const speakerName = document.getElementById('speakerName');
+        const avatarIcon = document.getElementById('avatarIcon');
+        const dialogueText = document.getElementById('dialogueText');
+        const arabicHint = document.getElementById('arabicHint');
+        const choicesContainer = document.getElementById('choicesContainer');
+        const feedbackBox = document.getElementById('feedbackBox');
+        const nextBtn = document.getElementById('nextBtn');
+        const progressFill = document.getElementById('progressFill');
+        const progressTxt = document.getElementById('progressTxt');
+        const xpTxt = document.getElementById('xpTxt');
+        const accuracyTxt = document.getElementById('accuracyTxt');
+        const listenBtn = document.getElementById('listenBtn');
+
+        function loadScenario(idx) {
+            const sc = scenarios[idx];
+            scenarioTag.textContent = sc.unit;
+            speakerName.textContent = sc.speaker;
+            avatarIcon.textContent = sc.avatar;
+            dialogueText.textContent = sc.dialogue;
+            arabicHint.textContent = sc.arabic;
+
+            feedbackBox.className = 'feedback-box';
+            feedbackBox.innerHTML = '';
+            nextBtn.style.display = 'none';
+
+            choicesContainer.innerHTML = '';
+            sc.choices.forEach(ch => {
+                const btn = document.createElement('button');
+                btn.className = 'choice-btn';
+                btn.innerHTML = `<span>${ch.text}</span> <span>➔</span>`;
+                btn.addEventListener('click', () => handleChoice(btn, ch));
+                choicesContainer.appendChild(btn);
+            });
+
+            progressTxt.textContent = `${idx + 1} / ${scenarios.length}`;
+            progressFill.style.width = `${((idx + 1) / scenarios.length) * 100}%`;
+        }
+
+        function handleChoice(selectedBtn, choice) {
+            attempts++;
+            const allBtns = choicesContainer.querySelectorAll('.choice-btn');
+            allBtns.forEach(b => b.disabled = true);
+
+            if (choice.correct) {
+                correctCount++;
+                selectedBtn.classList.add('correct');
+                scoreXp += 250;
+                xpTxt.textContent = `${scoreXp} XP`;
+                feedbackBox.className = 'feedback-box show';
+                feedbackBox.style.borderColor = 'var(--success)';
+                feedbackBox.innerHTML = choice.explain;
+
+                // Unlock Badges
+                if (currentIdx === 0) document.getElementById('badge1').classList.add('unlocked');
+                if (currentIdx === 1) document.getElementById('badge2').classList.add('unlocked');
+                if (currentIdx === 3) document.getElementById('badge3').classList.add('unlocked');
+            } else {
+                selectedBtn.classList.add('incorrect');
+                feedbackBox.className = 'feedback-box show';
+                feedbackBox.style.borderColor = 'var(--accent)';
+                feedbackBox.innerHTML = choice.explain;
+            }
+
+            const acc = Math.round((correctCount / attempts) * 100);
+            accuracyTxt.textContent = `${acc}%`;
+            nextBtn.style.display = 'block';
+        }
+
+        nextBtn.addEventListener('click', () => {
+            currentIdx++;
+            if (currentIdx < scenarios.length) {
+                loadScenario(currentIdx);
+            } else {
+                // Show final modal
+                document.getElementById('finalXp').textContent = `${scoreXp} XP`;
+                document.getElementById('finalAccuracy').textContent = `${Math.round((correctCount / attempts) * 100)}%`;
+                document.getElementById('reportModal').classList.add('show');
+            }
+        });
+
+        // Web Speech API for Text-to-Speech
+        listenBtn.addEventListener('click', () => {
+            if ('speechSynthesis' in window) {
+                const utter = new SpeechSynthesisUtterance(dialogueText.textContent);
+                utter.lang = 'en-US';
+                const voices = window.speechSynthesis.getVoices();
+                const enVoice = voices.find(v => v.lang.startsWith('en'));
+                if (enVoice) utter.voice = enVoice;
+                utter.rate = 0.95;
+                window.speechSynthesis.speak(utter);
+            } else {
+                alert('Audio playback is not supported by your browser.');
+            }
+        });
+
+        loadScenario(0);
+    </script>
+</body>
+</html>

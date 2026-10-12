@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>معمل الأمن السيبراني وتقنيات التشفير | مسار علوم الحاسب والهندسة</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=Fira+Code:wght@500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #070d14;
+            --panel: rgba(15, 23, 42, 0.85);
+            --border: rgba(16, 185, 129, 0.3);
+            --primary: #10b981;
+            --primary-glow: rgba(16, 185, 129, 0.4);
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --cyan: #06b6d4;
+            --text: #f8fafc;
+            --muted: #94a3b8;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Tajawal', sans-serif; }
+        body {
+            background-color: var(--bg);
+            background-image: radial-gradient(circle at 50% 0%, rgba(16, 185, 129, 0.12) 0%, transparent 60%);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        header {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 16px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            backdrop-filter: blur(10px);
+        }
+
+        .header-title h1 { font-size: 1.4rem; color: #fff; display: flex; align-items: center; gap: 8px; }
+        .header-title span.glow { color: var(--primary); text-shadow: 0 0 12px var(--primary-glow); }
+        .header-title p { color: var(--muted); font-size: 0.85rem; margin-top: 3px; }
+
+        .badge {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--primary);
+            border: 1px solid var(--primary);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .tab-bar {
+            display: flex;
+            gap: 8px;
+            background: var(--panel);
+            padding: 6px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            overflow-x: auto;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            color: var(--muted);
+            padding: 9px 18px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s;
+            white-space: nowrap;
+        }
+        .tab-btn.active {
+            background: var(--primary);
+            color: #070d14;
+            font-weight: 800;
+        }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.25s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+        .card {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            backdrop-filter: blur(10px);
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            color: var(--primary);
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 6px;
+            font-weight: bold;
+        }
+
+        input[type="text"], input[type="password"], textarea, select {
+            width: 100%;
+            border-radius: 8px;
+            padding: 10px 14px;
+            border: 1px solid var(--border);
+            background: #090e17;
+            color: var(--text);
+            font-size: 0.95rem;
+            outline: none;
+        }
+        input:focus, textarea:focus { border-color: var(--primary); }
+
+        .code-box {
+            background: #05080e;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 12px;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.9rem;
+            color: var(--cyan);
+            word-break: break-all;
+            direction: ltr;
+            text-align: left;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #059669, var(--primary));
+            color: #070d14;
+            font-weight: 800;
+            border: none;
+            padding: 11px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        .btn:hover { opacity: 0.9; }
+        .btn.danger { background: linear-gradient(135deg, #dc2626, var(--danger)); color: #fff; }
+
+        /* SQL Injection Visualizer */
+        .sql-query-display {
+            background: #05080e;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 14px;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.95rem;
+            color: #e2e8f0;
+            direction: ltr;
+            line-height: 1.5;
+        }
+        .sql-query-display span.injected { color: var(--danger); font-weight: bold; text-decoration: underline; }
+
+        .status-alert {
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            display: none;
+        }
+        .status-alert.breached { display: block; background: rgba(239, 68, 68, 0.15); border: 1px solid var(--danger); color: #fca5a5; }
+        .status-alert.safe { display: block; background: rgba(16, 185, 129, 0.15); border: 1px solid var(--primary); color: #6ee7b7; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-title">
+            <h1>🛡️ معمل الأمن السيبراني: <span class="glow">التشفير واختبار الاختراق</span></h1>
+            <p>محاكاة خوارزميات التشفير وهجمات حقن SQL والقوة الغاشمة - مسار علوم الحاسب والهندسة</p>
+        </div>
+        <span class="badge">ثالث ثانوي | أمن سيبراني</span>
+    </header>
+
+    <div class="tab-bar">
+        <button class="tab-btn active" data-tab="tab-crypto">🔑 معمل التشفير والتجزئة (Hashing)</button>
+        <button class="tab-btn" data-tab="tab-sqli">💉 محاكي حقن SQL (SQL Injection)</button>
+        <button class="tab-btn" data-tab="tab-bruteforce">💥 اختبار القوة الغاشمة لكلمات المرور</button>
+    </div>
+
+    <!-- 1. Crypto & Hash -->
+    <div class="tab-content active" id="tab-crypto">
+        <div class="card">
+            <h2 class="card-title">1. خوارزميات التشفير ودوال التجزئة الرياضية (SHA-256)</h2>
+            
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+                <label>أدخل النص الأصلي (Plaintext):</label>
+                <input type="text" id="plainInput" value="Saudi Vision 2030 - Cybersecurity">
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px;">
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <label>دالة التجزئة المشفرة (SHA-256 Hash):</label>
+                    <div class="code-box" id="shaOutput">جاري الحساب...</div>
+                    <span style="font-size: 0.75rem; color: var(--muted);">لاحظ تغير الهاش بالكامل عند تغيير حرف واحد فقط (Avalanche Effect).</span>
+                </div>
+
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <label>تشفير قيصر (Caesar Cipher) - مفتاح الإزاحة: <span id="shiftTxt" style="color: var(--primary); font-weight: bold;">3</span></label>
+                    <input type="range" id="shiftSlider" min="1" max="25" value="3">
+                    <div class="code-box" id="caesarOutput">...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. SQL Injection -->
+    <div class="tab-content" id="tab-sqli">
+        <div class="card">
+            <h2 class="card-title">2. محاكاة ثغرة حقن أوامر قواعد البيانات (SQL Injection & Defense)</h2>
+            <p style="font-size: 0.88rem; color: var(--muted); line-height: 1.5;">
+                جرب إدخال اسم مستخدم عادي، أو اختبر حقن عبارة برمجية خبيثة تتلاعب بالمنطق الشرطي وتتجاوز التحقق من كلمة المرور:
+            </p>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 12px;">
+                <div>
+                    <label style="margin-bottom: 5px;">اسم المستخدم (Username):</label>
+                    <input type="text" id="sqlUser" value="admin' OR '1'='1' --">
+                </div>
+                <div>
+                    <label style="margin-bottom: 5px;">كلمة المرور (Password):</label>
+                    <input type="text" id="sqlPass" value="wrongpassword">
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <button class="btn" id="runQueryBtn">⚡ تنفيذ استعلام تسجيل الدخول</button>
+                <button class="btn danger" id="fillPayloadBtn">💥 تجربة ثغرة Bypass (' OR '1'='1' --)</button>
+                <button class="btn" id="toggleDefenseBtn" style="background: #1e293b; color: #38bdf8; border: 1px solid #38bdf8;">
+                    🛡️ تفعيل الحماية (Parameterized Query): معطل
+                </button>
+            </div>
+
+            <div>
+                <label style="margin-bottom: 6px;">الاستعلام المولد في خادم قاعدة البيانات (Backend SQL Query):</label>
+                <div class="sql-query-display" id="sqlQueryOutput">
+                    SELECT * FROM users WHERE username = '...' AND password = '...';
+                </div>
+            </div>
+
+            <div class="status-alert" id="authResultAlert"></div>
+        </div>
+    </div>
+
+    <!-- 3. Brute Force -->
+    <div class="tab-content" id="tab-bruteforce">
+        <div class="card">
+            <h2 class="card-title">3. قياس قوة كلمة المرور ومحاكي هجوم القوة الغاشمة (Brute Force)</h2>
+
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+                <label>أدخل كلمة مرور لاختبارها وتخمينها:</label>
+                <input type="text" id="targetPwd" value="sec99">
+            </div>
+
+            <div style="display: flex; gap: 10px;">
+                <button class="btn" id="startCrackBtn">⚡ محاكاة هجوم التخمين (Start Attack)</button>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;">
+                <div class="card" style="padding: 12px; background: #05080e;">
+                    <span style="font-size: 0.8rem; color: var(--muted);">المحاولة الجارية:</span>
+                    <div style="font-family: 'Fira Code'; font-size: 1.2rem; color: var(--warning); margin-top: 4px;" id="currentAttemptTxt">-</div>
+                </div>
+                <div class="card" style="padding: 12px; background: #05080e;">
+                    <span style="font-size: 0.8rem; color: var(--muted);">عدد المحاولات:</span>
+                    <div style="font-family: 'Fira Code'; font-size: 1.2rem; color: var(--cyan); margin-top: 4px;" id="attemptsCountTxt">0</div>
+                </div>
+                <div class="card" style="padding: 12px; background: #05080e;">
+                    <span style="font-size: 0.8rem; color: var(--muted);">النتيجة:</span>
+                    <div style="font-size: 1.1rem; font-weight: bold; color: var(--primary); margin-top: 4px;" id="crackResultTxt">جاهز</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tabs
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        const tabContents = document.querySelectorAll('.tab-content');
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                tabBtns.forEach(b => b.classList.remove('active'));
+                tabContents.forEach(c => c.classList.remove('active'));
+                btn.classList.add('active');
+                document.getElementById(btn.dataset.tab).classList.add('active');
+            });
+        });
+
+        // 1. SHA-256 and Caesar
+        async function sha256(str) {
+            const buffer = new TextEncoder().encode(str);
+            const digest = await crypto.subtle.digest('SHA-256', buffer);
+            return Array.from(new Uint8Array(digest)).map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
+        function caesar(str, shift) {
+            return str.split('').map(char => {
+                const code = char.charCodeAt(0);
+                if (code >= 65 && code <= 90) {
+                    return String.fromCharCode(((code - 65 + shift) % 26) + 65);
+                }
+                if (code >= 97 && code <= 122) {
+                    return String.fromCharCode(((code - 97 + shift) % 26) + 97);
+                }
+                return char;
+            }).join('');
+        }
+
+        const plainInput = document.getElementById('plainInput');
+        const shiftSlider = document.getElementById('shiftSlider');
+        const shiftTxt = document.getElementById('shiftTxt');
+        const shaOutput = document.getElementById('shaOutput');
+        const caesarOutput = document.getElementById('caesarOutput');
+
+        async function updateCrypto() {
+            const txt = plainInput.value;
+            const shift = parseInt(shiftSlider.value);
+            shiftTxt.textContent = shift;
+            shaOutput.textContent = await sha256(txt);
+            caesarOutput.textContent = caesar(txt, shift);
+        }
+
+        plainInput.addEventListener('input', updateCrypto);
+        shiftSlider.addEventListener('input', updateCrypto);
+        updateCrypto();
+
+        // 2. SQL Injection
+        const sqlUser = document.getElementById('sqlUser');
+        const sqlPass = document.getElementById('sqlPass');
+        const sqlQueryOutput = document.getElementById('sqlQueryOutput');
+        const authResultAlert = document.getElementById('authResultAlert');
+        const runQueryBtn = document.getElementById('runQueryBtn');
+        const fillPayloadBtn = document.getElementById('fillPayloadBtn');
+        const toggleDefenseBtn = document.getElementById('toggleDefenseBtn');
+
+        let defenseActive = false;
+
+        function runSQLAuth() {
+            const u = sqlUser.value;
+            const p = sqlPass.value;
+
+            if (defenseActive) {
+                // Prepared statement protects against injection
+                sqlQueryOutput.innerHTML = `PREPARE stmt FROM 'SELECT * FROM users WHERE username = ? AND password = ?';<br>EXECUTE stmt USING ('${u}', '${p}');`;
+                if (u === 'admin' && p === 'secret123') {
+                    authResultAlert.className = 'status-alert safe';
+                    authResultAlert.textContent = '✅ تم تسجيل الدخول بنجاح بحساب المدير المعتمد.';
+                } else {
+                    authResultAlert.className = 'status-alert safe';
+                    authResultAlert.textContent = '🔒 فشل تسجيل الدخول: تم إحباط محاولة الحقن بنجاح بفضل تقنية الاستعلامات المجهزة (Parameterized Queries).';
+                }
+            } else {
+                // Vulnerable string concatenation
+                const isPayload = u.includes("' OR '") || u.includes("' or '") || u.includes("--");
+                sqlQueryOutput.innerHTML = `SELECT * FROM users WHERE username = '<span class="${isPayload ? 'injected' : ''}">${u}</span>' AND password = '${p}';`;
+
+                if (isPayload) {
+                    authResultAlert.className = 'status-alert breached';
+                    authResultAlert.innerHTML = '🚨 <strong>تم اختراق النظام بنجاح! (Bypass Successful)</strong><br>الشرط المنطقي أصبح دائماً صائباً (TRUE OR 1=1)، فقام الخادم بتسليم بيانات المستخدم الأول دون التحقق من كلمة المرور!';
+                } else if (u === 'admin' && p === 'secret123') {
+                    authResultAlert.className = 'status-alert safe';
+                    authResultAlert.textContent = '✅ دخول مصرح به.';
+                } else {
+                    authResultAlert.className = 'status-alert breached';
+                    authResultAlert.textContent = '❌ اسم مستخدم أو كلمة مرور غير صحيحة.';
+                }
+            }
+        }
+
+        runQueryBtn.addEventListener('click', runSQLAuth);
+        fillPayloadBtn.addEventListener('click', () => {
+            sqlUser.value = "admin' OR '1'='1' --";
+            runSQLAuth();
+        });
+
+        toggleDefenseBtn.addEventListener('click', () => {
+            defenseActive = !defenseActive;
+            if (defenseActive) {
+                toggleDefenseBtn.textContent = '🛡️ تفعيل الحماية (Parameterized Query): مفعل ✅';
+                toggleDefenseBtn.style.color = '#10b981';
+                toggleDefenseBtn.style.borderColor = '#10b981';
+            } else {
+                toggleDefenseBtn.textContent = '🛡️ تفعيل الحماية (Parameterized Query): معطل ❌';
+                toggleDefenseBtn.style.color = '#38bdf8';
+                toggleDefenseBtn.style.borderColor = '#38bdf8';
+            }
+            runSQLAuth();
+        });
+        runSQLAuth();
+
+        // 3. Brute Force Attack
+        const targetPwd = document.getElementById('targetPwd');
+        const startCrackBtn = document.getElementById('startCrackBtn');
+        const currentAttemptTxt = document.getElementById('currentAttemptTxt');
+        const attemptsCountTxt = document.getElementById('attemptsCountTxt');
+        const crackResultTxt = document.getElementById('crackResultTxt');
+
+        let crackTimer = null;
+        startCrackBtn.addEventListener('click', () => {
+            if (crackTimer) clearInterval(crackTimer);
+            const target = targetPwd.value.trim().toLowerCase();
+            if (!target) return;
+
+            let count = 0;
+            crackResultTxt.textContent = 'جاري التخمين...';
+            crackResultTxt.style.color = 'var(--warning)';
+
+            const charset = 'abcdefghijklmnopqrstuvwxyz0123456789';
+            crackTimer = setInterval(() => {
+                count += 17;
+                attemptsCountTxt.textContent = count.toLocaleString();
+
+                // Generate random guess
+                let guess = '';
+                for (let i = 0; i < target.length; i++) {
+                    guess += charset[Math.floor(Math.random() * charset.length)];
+                }
+                currentAttemptTxt.textContent = guess;
+
+                if (guess === target || count > 600) {
+                    clearInterval(crackTimer);
+                    currentAttemptTxt.textContent = target;
+                    crackResultTxt.textContent = `🔓 تم كسر الكلمة بنجاح (${target})`;
+                    crackResultTxt.style.color = 'var(--danger)';
+                }
+            }, 30);
+        });
+    </script>
+</body>
+</html>

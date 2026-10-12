@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>مستكشف الدوال الرئيسة والتحويلات الهندسية | رياضيات 3</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=Fira+Code:wght@500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a0e17;
+            --panel-bg: rgba(20, 27, 45, 0.85);
+            --border: rgba(80, 115, 184, 0.25);
+            --neon-blue: #00f0ff;
+            --neon-purple: #b5179e;
+            --neon-green: #38b000;
+            --neon-yellow: #ffb703;
+            --text: #f1f5f9;
+            --muted: #94a3b8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Tajawal', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        header {
+            background: var(--panel-bg);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            backdrop-filter: blur(12px);
+        }
+
+        .header-title h1 {
+            font-size: 1.8rem;
+            color: var(--neon-blue);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-title p {
+            color: var(--muted);
+            font-size: 0.95rem;
+            margin-top: 5px;
+        }
+
+        .badge {
+            background: rgba(0, 240, 255, 0.1);
+            color: var(--neon-blue);
+            border: 1px solid var(--neon-blue);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+
+        .workspace-grid {
+            display: grid;
+            grid-template-columns: 340px 1fr 340px;
+            gap: 20px;
+            flex: 1;
+        }
+
+        @media (max-width: 1250px) {
+            .workspace-grid {
+                grid-template-columns: 340px 1fr;
+            }
+            .analysis-panel {
+                grid-column: span 2;
+            }
+        }
+
+        @media (max-width: 850px) {
+            .workspace-grid {
+                grid-template-columns: 1fr;
+            }
+            .analysis-panel {
+                grid-column: span 1;
+            }
+        }
+
+        .card {
+            background: var(--panel-bg);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            backdrop-filter: blur(12px);
+        }
+
+        .card-header {
+            font-size: 1.15rem;
+            color: var(--neon-blue);
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Buttons Grid for Parent Functions */
+        .func-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .func-btn {
+            background: #10172a;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text);
+            padding: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+
+        .func-btn:hover {
+            border-color: var(--neon-blue);
+            background: rgba(0, 240, 255, 0.05);
+        }
+
+        .func-btn.active {
+            background: linear-gradient(135deg, rgba(0, 240, 255, 0.2), rgba(181, 23, 158, 0.2));
+            border-color: var(--neon-blue);
+            color: var(--neon-blue);
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.25);
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        label {
+            font-size: 0.9rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .val-badge {
+            font-family: 'Fira Code', monospace;
+            background: #0f172a;
+            padding: 2px 8px;
+            border-radius: 6px;
+            color: var(--neon-yellow);
+            border: 1px solid rgba(255, 183, 3, 0.3);
+            font-size: 0.85rem;
+        }
+
+        input[type="range"] {
+            height: 6px;
+            border-radius: 3px;
+            outline: none;
+            accent-color: var(--neon-blue);
+            cursor: pointer;
+        }
+
+        /* Canvas Screen */
+        .canvas-wrapper {
+            background: #050811;
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+            box-shadow: inset 0 0 40px rgba(0,0,0,0.8);
+        }
+
+        canvas {
+            width: 100%;
+            height: auto; aspect-ratio: 16/10;
+            display: block;
+            cursor: crosshair;
+        }
+
+        .canvas-overlay {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(10, 14, 23, 0.85);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 10px 16px;
+            font-size: 0.82rem;
+            display: flex;
+            gap: 15px;
+        }
+
+        .legend-tag {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .legend-line {
+            width: 16px;
+            height: 3px;
+            border-radius: 2px;
+        }
+
+        /* Analysis Properties */
+        .formula-box {
+            background: #080d1a;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .formula-display {
+            font-family: 'Fira Code', monospace;
+            font-size: 1.35rem;
+            color: var(--neon-blue);
+            font-weight: bold;
+            direction: ltr;
+        }
+
+        .prop-item {
+            background: rgba(16, 23, 42, 0.6);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 12px 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .prop-label {
+            font-size: 0.82rem;
+            color: var(--muted);
+        }
+
+        .prop-value {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--text);
+            font-family: 'Fira Code', 'Tajawal', monospace;
+            direction: ltr;
+            text-align: right;
+        }
+
+        .reset-btn {
+            background: #1e293b;
+            color: var(--text);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+        .reset-btn:hover {
+            border-color: var(--neon-yellow);
+            color: var(--neon-yellow);
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-title">
+            <h1>📐 مستكشف الدوال الرئيسة والتحويلات الهندسية</h1>
+            <p>تحليل بياني وتفاعلي شامل لمعاملات الدالة: g(x) = a · f(x - h) + k - مقرر رياضيات 3</p>
+        </div>
+        <span class="badge">المملكة العربية السعودية | ثالث ثانوي</span>
+    </header>
+
+    <div class="workspace-grid">
+        <!-- Sidebar Controls -->
+        <div class="card">
+            <div class="card-header">
+                <span>1. اختر الدالة الرئيسة الأم f(x)</span>
+            </div>
+            
+            <div class="func-grid">
+                <button class="func-btn active" data-type="quadratic">التربيعية x²</button>
+                <button class="func-btn" data-type="cubic">التكعيبية x³</button>
+                <button class="func-btn" data-type="sqrt">الجذرية √x</button>
+                <button class="func-btn" data-type="reciprocal">المقلوب 1/x</button>
+                <button class="func-btn" data-type="abs">المطلقة |x|</button>
+            </div>
+
+            <div class="card-header" style="margin-top: 10px;">
+                <span>2. معاملات التحويل الهندسي</span>
+            </div>
+
+            <div class="control-group">
+                <label>التمدد / الانعكاس الرأسي (a): <span class="val-badge" id="aTxt">1.0</span></label>
+                <input type="range" id="aSlider" min="-3" max="3" step="0.2" value="1.0">
+            </div>
+
+            <div class="control-group">
+                <label>الإزاحة الأفقية (h): <span class="val-badge" id="hTxt">0.0</span></label>
+                <input type="range" id="hSlider" min="-6" max="6" step="0.5" value="0.0">
+            </div>
+
+            <div class="control-group">
+                <label>الإزاحة الرأسية (k): <span class="val-badge" id="kTxt">0.0</span></label>
+                <input type="range" id="kSlider" min="-6" max="6" step="0.5" value="0.0">
+            </div>
+
+            <button class="reset-btn" id="resetBtn">🔄 استعادة الدالة الأم القياسية</button>
+        </div>
+
+        <!-- Center Graph Canvas -->
+        <div class="canvas-wrapper">
+            <canvas id="mathCanvas" width="700" height="500"></canvas>
+            <div class="canvas-overlay">
+                <div class="legend-tag"><div class="legend-line" style="background: #94a3b8; border-top: 2px dashed #94a3b8;"></div> الدالة الأم f(x)</div>
+                <div class="legend-tag"><div class="legend-line" style="background: #00f0ff;"></div> الدالة الناتجة g(x)</div>
+            </div>
+        </div>
+
+        <!-- Right Analysis Panel -->
+        <div class="card analysis-panel">
+            <div class="card-header">
+                <span>3. الخصائص والتحليل الجبري</span>
+            </div>
+
+            <div class="formula-box">
+                <div style="font-size: 0.8rem; color: var(--muted); margin-bottom: 4px;">صيغة الدالة الحالية:</div>
+                <div class="formula-display" id="formulaDisplay">g(x) = x²</div>
+            </div>
+
+            <div class="prop-item">
+                <span class="prop-label">المجال (Domain):</span>
+                <span class="prop-value" id="domainVal">(-∞, ∞)</span>
+            </div>
+
+            <div class="prop-item">
+                <span class="prop-label">المدى (Range):</span>
+                <span class="prop-value" id="rangeVal">[0, ∞)</span>
+            </div>
+
+            <div class="prop-item">
+                <span class="prop-label">مقطع المحور الصادي g(0):</span>
+                <span class="prop-value" id="yIntVal">(0, 0)</span>
+            </div>
+
+            <div class="prop-item">
+                <span class="prop-label">التماثل (Symmetry):</span>
+                <span class="prop-value" id="symVal">حول محور y (دالة زوجية)</span>
+            </div>
+
+            <div class="prop-item">
+                <span class="prop-label">سلوك طرفي التمثيل البياني (End Behavior):</span>
+                <span class="prop-value" style="font-size: 0.85rem;" id="endBehaviorVal">as x→±∞, g(x)→∞</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('mathCanvas');
+        const ctx = canvas.getContext('2d');
+
+        const funcBtns = document.querySelectorAll('.func-btn');
+        const aSlider = document.getElementById('aSlider');
+        const hSlider = document.getElementById('hSlider');
+        const kSlider = document.getElementById('kSlider');
+        const aTxt = document.getElementById('aTxt');
+        const hTxt = document.getElementById('hTxt');
+        const kTxt = document.getElementById('kTxt');
+        const resetBtn = document.getElementById('resetBtn');
+
+        const formulaDisplay = document.getElementById('formulaDisplay');
+        const domainVal = document.getElementById('domainVal');
+        const rangeVal = document.getElementById('rangeVal');
+        const yIntVal = document.getElementById('yIntVal');
+        const symVal = document.getElementById('symVal');
+        const endBehaviorVal = document.getElementById('endBehaviorVal');
+
+        let currentFunc = 'quadratic';
+
+        // Evaluate parent function f(x)
+        function evalParent(type, x) {
+            switch(type) {
+                case 'quadratic': return x * x;
+                case 'cubic': return x * x * x;
+                case 'sqrt': return x >= 0 ? Math.sqrt(x) : null;
+                case 'reciprocal': return Math.abs(x) > 0.0001 ? 1 / x : null;
+                case 'abs': return Math.abs(x);
+                default: return x;
+            }
+        }
+
+        // Evaluate g(x) = a * f(x - h) + k
+        function evalTransformed(type, a, h, k, x) {
+            const inner = x - h;
+            const parentY = evalParent(type, inner);
+            if (parentY === null || isNaN(parentY)) return null;
+            return a * parentY + k;
+        }
+
+        function updateAll() {
+            let a = parseFloat(aSlider.value);
+            if (Math.abs(a) < 0.1) a = 0.1; // avoid 0
+            const h = parseFloat(hSlider.value);
+            const k = parseFloat(kSlider.value);
+
+            aTxt.textContent = a.toFixed(1);
+            hTxt.textContent = h.toFixed(1);
+            kTxt.textContent = k.toFixed(1);
+
+            renderGraph(currentFunc, a, h, k);
+            updateAnalysis(currentFunc, a, h, k);
+        }
+
+        function renderGraph(type, a, h, k) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const originX = canvas.width / 2;
+            const originY = canvas.height / 2;
+            const scale = 25; // 25 px per unit
+
+            // Draw Cartesian Grid
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.07)';
+            ctx.lineWidth = 1;
+
+            // Vertical grid lines
+            for (let x = originX % scale; x < canvas.width; x += scale) {
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, canvas.height);
+                ctx.stroke();
+            }
+
+            // Horizontal grid lines
+            for (let y = originY % scale; y < canvas.height; y += scale) {
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(canvas.width, y);
+                ctx.stroke();
+            }
+
+            // Main Axes
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(0, originY);
+            ctx.lineTo(canvas.width, originY);
+            ctx.moveTo(originX, 0);
+            ctx.lineTo(originX, canvas.height);
+            ctx.stroke();
+
+            // Numbers on Axes
+            ctx.fillStyle = '#64748b';
+            ctx.font = '10px Fira Code';
+            ctx.textAlign = 'center';
+            for (let u = -12; u <= 12; u += 2) {
+                if (u === 0) continue;
+                const px = originX + u * scale;
+                const py = originY - u * scale;
+                ctx.fillText(u, px, originY + 14);
+                ctx.fillText(u, originX - 12, py + 3);
+            }
+
+            // 1. Draw Parent Function (Dashed Gray)
+            ctx.setLineDash([4, 4]);
+            ctx.strokeStyle = '#64748b';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            let firstP = true;
+            for (let px = 0; px <= canvas.width; px += 2) {
+                const mathX = (px - originX) / scale;
+                const mathY = evalParent(type, mathX);
+                if (mathY === null || isNaN(mathY) || Math.abs(mathY) > 25) {
+                    firstP = true;
+                    continue;
+                }
+                const py = originY - mathY * scale;
+                if (firstP) {
+                    ctx.moveTo(px, py);
+                    firstP = false;
+                } else {
+                    ctx.lineTo(px, py);
+                }
+            }
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            // 2. Draw Transformed Function g(x) (Glowing Cyan)
+            ctx.shadowColor = '#00f0ff';
+            ctx.shadowBlur = 10;
+            ctx.strokeStyle = '#00f0ff';
+            ctx.lineWidth = 3.2;
+            ctx.beginPath();
+            let firstT = true;
+            for (let px = 0; px <= canvas.width; px += 1.5) {
+                const mathX = (px - originX) / scale;
+                const mathY = evalTransformed(type, a, h, k, mathX);
+                if (mathY === null || isNaN(mathY) || Math.abs(mathY) > 25) {
+                    firstT = true;
+                    continue;
+                }
+                const py = originY - mathY * scale;
+                if (firstT) {
+                    ctx.moveTo(px, py);
+                    firstT = false;
+                } else {
+                    ctx.lineTo(px, py);
+                }
+            }
+            ctx.stroke();
+            ctx.shadowBlur = 0; // reset shadow
+        }
+
+        function updateAnalysis(type, a, h, k) {
+            // Generate formula text
+            let hPart = h === 0 ? 'x' : (h > 0 ? `(x - ${h})` : `(x + ${Math.abs(h)})`);
+            let core = '';
+            switch(type) {
+                case 'quadratic': core = `${hPart}²`; break;
+                case 'cubic': core = `${hPart}³`; break;
+                case 'sqrt': core = `√${hPart}`; break;
+                case 'reciprocal': core = `1 / ${hPart}`; break;
+                case 'abs': core = `|${hPart}|`; break;
+            }
+            let aPrefix = a === 1 ? '' : (a === -1 ? '-' : `${a}`);
+            let kSuffix = k === 0 ? '' : (k > 0 ? ` + ${k}` : ` - ${Math.abs(k)}`);
+            formulaDisplay.textContent = `g(x) = ${aPrefix}${core}${kSuffix}`;
+
+            // Domain & Range & Symmetry
+            if (type === 'quadratic') {
+                domainVal.textContent = '(-∞, ∞)';
+                rangeVal.textContent = a > 0 ? `[${k}, ∞)` : `(-∞, ${k}]`;
+                symVal.textContent = h === 0 ? 'حول محور y (دالة زوجية)' : `حول المستقيم x = ${h}`;
+                endBehaviorVal.textContent = a > 0 ? 'as x→±∞, g(x)→∞' : 'as x→±∞, g(x)→-∞';
+            } else if (type === 'cubic') {
+                domainVal.textContent = '(-∞, ∞)';
+                rangeVal.textContent = '(-∞, ∞)';
+                symVal.textContent = (h === 0 && k === 0) ? 'حول نقطة الأصل (فردية)' : `حول النقطة (${h}, ${k})`;
+                endBehaviorVal.textContent = a > 0 ? 'x→∞, g→∞ | x→-∞, g→-∞' : 'x→∞, g→-∞ | x→-∞, g→∞';
+            } else if (type === 'sqrt') {
+                domainVal.textContent = `[${h}, ∞)`;
+                rangeVal.textContent = a > 0 ? `[${k}, ∞)` : `(-∞, ${k}]`;
+                symVal.textContent = 'لا يوجد تماثل';
+                endBehaviorVal.textContent = a > 0 ? 'as x→∞, g(x)→∞' : 'as x→∞, g(x)→-∞';
+            } else if (type === 'reciprocal') {
+                domainVal.textContent = `ℝ \ {${h}}`;
+                rangeVal.textContent = `ℝ \ {${k}}`;
+                symVal.textContent = `مركز التماثل: (${h}, ${k})`;
+                endBehaviorVal.textContent = `as x→±∞, g(x)→${k}`;
+            } else if (type === 'abs') {
+                domainVal.textContent = '(-∞, ∞)';
+                rangeVal.textContent = a > 0 ? `[${k}, ∞)` : `(-∞, ${k}]`;
+                symVal.textContent = h === 0 ? 'حول محور y (دالة زوجية)' : `حول المستقيم x = ${h}`;
+                endBehaviorVal.textContent = a > 0 ? 'as x→±∞, g(x)→∞' : 'as x→±∞, g(x)→-∞';
+            }
+
+            // Y-intercept
+            const y0 = evalTransformed(type, a, h, k, 0);
+            yIntVal.textContent = (y0 !== null && isFinite(y0)) ? `(0, ${y0.toFixed(2)})` : 'لا يوجد مقطع صادي';
+        }
+
+        funcBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                funcBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentFunc = btn.dataset.type;
+                updateAll();
+            });
+        });
+
+        [aSlider, hSlider, kSlider].forEach(slider => {
+            slider.addEventListener('input', updateAll);
+        });
+
+        resetBtn.addEventListener('click', () => {
+            aSlider.value = 1.0;
+            hSlider.value = 0.0;
+            kSlider.value = 0.0;
+            updateAll();
+        });
+
+        updateAll();
+    </script>
+</body>
+</html>

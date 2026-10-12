@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>معمل المعايرة وحسابات الـ pH | كيمياء 3</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=Fira+Code:wght@500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0b1322;
+            --card-bg: rgba(22, 33, 56, 0.9);
+            --border-color: rgba(56, 189, 248, 0.25);
+            --primary: #38bdf8;
+            --accent-pink: #f43f5e;
+            --accent-green: #10b981;
+            --accent-yellow: #f59e0b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Tajawal', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            background-image: radial-gradient(circle at 50% 0%, rgba(56, 189, 248, 0.12) 0%, transparent 60%);
+            color: var(--text-main);
+            min-height: 100vh;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        header {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 16px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            backdrop-filter: blur(10px);
+        }
+
+        .header-title h1 {
+            font-size: 1.4rem;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .header-title p {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-top: 3px;
+        }
+
+        .badge {
+            background: rgba(56, 189, 248, 0.15);
+            color: var(--primary);
+            border: 1px solid var(--primary);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 320px 360px 1fr;
+            gap: 15px;
+            flex: 1;
+        }
+
+        @media (max-width: 1100px) {
+            .main-grid {
+                grid-template-columns: 320px 1fr;
+            }
+            .apparatus-card {
+                order: -1;
+            }
+        }
+
+        @media (max-width: 800px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            backdrop-filter: blur(10px);
+        }
+
+        .card-title {
+            font-size: 1.05rem;
+            color: var(--primary);
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 6px;
+            font-weight: 700;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        label {
+            font-size: 0.85rem;
+            color: var(--text-main);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        select, input[type="range"], button {
+            width: 100%;
+            border-radius: 8px;
+            padding: 9px 12px;
+            border: 1px solid var(--border-color);
+            background: #090e17;
+            color: var(--text-main);
+            font-size: 0.9rem;
+            outline: none;
+        }
+
+        input[type="range"] {
+            height: 6px;
+            padding: 0;
+            accent-color: var(--primary);
+            cursor: pointer;
+        }
+
+        .btn-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #0284c7, var(--primary));
+            color: #0b1322;
+            font-weight: 800;
+            cursor: pointer;
+            border: none;
+            padding: 10px;
+            transition: 0.2s;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            font-size: 0.85rem;
+        }
+
+        .btn:hover { opacity: 0.9; }
+        .btn.danger { background: linear-gradient(135deg, #dc2626, var(--accent-pink)); color: #fff; }
+        .btn.success { background: linear-gradient(135deg, #059669, var(--accent-green)); color: #fff; }
+
+        /* Apparatus SVG Container */
+        .apparatus-card {
+            background: #060a14;
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+            position: relative;
+        }
+
+        .svg-container {
+            width: 100%;
+            max-width: 250px;
+            display: flex;
+            justify-content: center;
+        }
+
+        svg {
+            width: 100%;
+            height: auto;
+            max-height: 480px;
+            display: block;
+        }
+
+        /* Live Charts & Dashboard */
+        .chart-box {
+            background: #060a14;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 8px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        canvas {
+            width: 100%;
+            height: auto;
+            aspect-ratio: 16/9;
+            display: block;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .stat-card {
+            background: #090e17;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 10px;
+            text-align: center;
+        }
+
+        .stat-card .val {
+            font-size: 1.35rem;
+            font-weight: 800;
+            color: var(--primary);
+            font-family: 'Fira Code', monospace;
+            margin-top: 3px;
+        }
+
+        .ph-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            margin-top: 4px;
+        }
+
+        .equation-box {
+            background: #090e17;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 10px;
+            font-size: 0.85rem;
+            line-height: 1.6;
+        }
+        .equation-box code {
+            color: var(--accent-yellow);
+            font-family: 'Fira Code', monospace;
+            direction: ltr;
+            display: inline-block;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-title">
+            <h1>🧪 معمل المعايرة وحسابات الـ pH التفاعلي</h1>
+            <p>محاكاة دقيقة للسحاحة وتفاعلات التعادل ومنحنى الرقم الهيدروجيني - كيمياء 3</p>
+        </div>
+        <span class="badge">ثالث ثانوي | كيمياء 3</span>
+    </header>
+
+    <div class="main-grid">
+        <!-- Controls Panel -->
+        <div class="card">
+            <h2 class="card-title">⚗️ إعداد المحاليل والكاشف</h2>
+            
+            <div class="form-group">
+                <label>نوع تفاعل المعايرة:</label>
+                <select id="reactionType">
+                    <option value="sa_sb">حمض قوي + قاعدة قوية (HCl + NaOH)</option>
+                    <option value="wa_sb">حمض ضعيف + قاعدة قوية (CH3COOH + NaOH)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>الكاشف الكيميائي (Indicator):</label>
+                <select id="indicatorSelect">
+                    <option value="phph">الفينولفثالين (عديم اللون ⟵ وردي عند 8.2-10)</option>
+                    <option value="bb">أزرق بروموثيمول (أصفر ⟵ أخضر ⟵ أزرق)</option>
+                    <option value="mo">الميثيل البرتقالي (أحمر ⟵ برتقالي ⟵ أصفر)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>حجم الحمض بالدورق (Va): <span id="vaVal" style="color: var(--primary); font-weight: bold;">25 mL</span></label>
+                <input type="range" id="vaSlider" min="10" max="50" value="25" step="5">
+            </div>
+
+            <div class="form-group">
+                <label>تركيز الحمض (Ma): <span id="maVal" style="color: var(--primary); font-weight: bold;">0.10 M</span></label>
+                <input type="range" id="maSlider" min="0.05" max="0.5" value="0.10" step="0.05">
+            </div>
+
+            <div class="form-group">
+                <label>تركيز القاعدة بالسحاحة (Mb): <span id="mbVal" style="color: var(--primary); font-weight: bold;">0.10 M</span></label>
+                <input type="range" id="mbSlider" min="0.05" max="0.5" value="0.10" step="0.05">
+            </div>
+
+            <h2 class="card-title">🕹️ التحكم في السحاحة</h2>
+            <div class="btn-group">
+                <button class="btn" id="addDropBtn">💧 قطرة (+0.2 mL)</button>
+                <button class="btn" id="addOneBtn">+1.0 mL</button>
+            </div>
+            <div class="btn-group">
+                <button class="btn success" id="addFiveBtn">+5.0 mL</button>
+                <button class="btn" id="toggleFlowBtn">🔄 تدفق مستمر</button>
+            </div>
+            <button class="btn danger" id="resetBtn">🔄 إعادة ضبط المعمل</button>
+        </div>
+
+        <!-- Realistic SVG Chemical Apparatus -->
+        <div class="apparatus-card">
+            <div class="svg-container">
+                <svg viewBox="0 0 260 520">
+                    <!-- Metal Retort Stand Base -->
+                    <rect x="25" y="495" width="210" height="15" rx="3" fill="#334155" stroke="#475569" stroke-width="1.5" />
+                    <!-- Stand Upright Rod -->
+                    <rect x="42" y="25" width="10" height="470" rx="2" fill="#64748b" />
+                    
+                    <!-- Clamp Arm holding the Burette -->
+                    <path d="M48,130 L117,130 M117,118 L117,142 M117,122 L143,122 M117,138 L143,138" stroke="#94a3b8" stroke-width="3" fill="none" />
+                    <!-- Clamp Bosshead knob -->
+                    <circle cx="47" cy="130" r="7" fill="#475569" stroke="#cbd5e1" stroke-width="1.5" />
+
+                    <!-- Burette Glass Tube (Upper) -->
+                    <rect x="117" y="35" width="26" height="260" rx="3" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.8)" stroke-width="2" />
+                    
+                    <!-- Clip path for Burette Liquid -->
+                    <clipPath id="buretteClip">
+                        <rect x="118" y="36" width="24" height="258" rx="2" />
+                    </clipPath>
+                    
+                    <!-- Liquid Inside Burette -->
+                    <rect id="buretteLiquidSvg" x="118" y="55" width="24" height="239" fill="rgba(56, 189, 248, 0.75)" clip-path="url(#buretteClip)" style="transition: y 0.25s, height 0.25s;" />
+                    
+                    <!-- Meniscus highlight -->
+                    <ellipse id="buretteMeniscus" cx="130" cy="55" rx="11" ry="2" fill="rgba(255,255,255,0.8)" style="transition: cy 0.25s;" />
+
+                    <!-- Burette Graduations and Numbers (0 at top, 50 at bottom) -->
+                    <g font-family="Fira Code, monospace" font-size="8" fill="#cbd5e1" text-anchor="end">
+                        <!-- 0 mL -->
+                        <line x1="117" y1="55" x2="125" y2="55" stroke="#fff" stroke-width="1.5" />
+                        <text x="114" y="58">0</text>
+                        <line x1="117" y1="77" x2="122" y2="77" stroke="#94a3b8" />
+                        <!-- 10 mL -->
+                        <line x1="117" y1="100" x2="125" y2="100" stroke="#fff" stroke-width="1.5" />
+                        <text x="114" y="103">10</text>
+                        <line x1="117" y1="122" x2="122" y2="122" stroke="#94a3b8" />
+                        <!-- 20 mL -->
+                        <line x1="117" y1="145" x2="125" y2="145" stroke="#fff" stroke-width="1.5" />
+                        <text x="114" y="148">20</text>
+                        <line x1="117" y1="167" x2="122" y2="167" stroke="#94a3b8" />
+                        <!-- 30 mL -->
+                        <line x1="117" y1="190" x2="125" y2="190" stroke="#fff" stroke-width="1.5" />
+                        <text x="114" y="193">30</text>
+                        <line x1="117" y1="212" x2="122" y2="212" stroke="#94a3b8" />
+                        <!-- 40 mL -->
+                        <line x1="117" y1="235" x2="125" y2="235" stroke="#fff" stroke-width="1.5" />
+                        <text x="114" y="238">40</text>
+                        <line x1="117" y1="257" x2="122" y2="257" stroke="#94a3b8" />
+                        <!-- 50 mL -->
+                        <line x1="117" y1="280" x2="125" y2="280" stroke="#fff" stroke-width="1.5" />
+                        <text x="114" y="283">50</text>
+                    </g>
+
+                    <!-- Stopcock Housing and Valve -->
+                    <rect x="123" y="295" width="14" height="15" fill="#334155" stroke="#64748b" />
+                    <!-- Stopcock Handle (Rotates on toggle) -->
+                    <g id="stopcockHandle" style="transform-origin: 130px 302px; transition: transform 0.25s; cursor: pointer;">
+                        <rect x="114" y="298" width="32" height="8" rx="3" fill="#ef4444" stroke="#b91c1c" />
+                        <circle cx="130" cy="302" r="3" fill="#fff" />
+                    </g>
+
+                    <!-- Burette Delivery Tip (ends at y=340) -->
+                    <polygon points="126,310 134,310 131,340 129,340" fill="rgba(255,255,255,0.15)" stroke="rgba(255,255,255,0.8)" stroke-width="1.5" />
+
+                    <!-- Air Gap & Falling Droplet (From y=342 to y=385) -->
+                    <!-- Falling Droplet into Flask -->
+                    <circle id="svgDrop" cx="130" cy="342" r="3.5" fill="rgba(56, 189, 248, 0.95)" style="opacity: 0;" />
+                    <!-- Liquid Impact Ripple -->
+                    <ellipse id="splashRipple" cx="130" cy="450" rx="0" ry="0" fill="none" stroke="rgba(255,255,255,0.8)" stroke-width="1.5" style="opacity: 0;" />
+
+                    <!-- Erlenmeyer Conical Flask (Completely below burette, neck starts at y=385, resting on base at y=495) -->
+                    <clipPath id="flaskClip">
+                        <path d="M117,386 L143,386 L143,415 L195,488 Q195,492 190,492 L70,492 Q65,492 65,488 L117,415 Z" />
+                    </clipPath>
+
+                    <!-- Flask Body Background -->
+                    <path d="M116,385 L144,385 L144,415 L196,488 Q196,493 190,493 L70,493 Q64,493 64,488 L116,415 Z" 
+                          fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.85)" stroke-width="2.5" />
+
+                    <!-- Flask Rim Lip -->
+                    <ellipse cx="130" cy="385" rx="14" ry="3" fill="rgba(255,255,255,0.2)" stroke="rgba(255,255,255,0.9)" stroke-width="1.5" />
+
+                    <!-- Liquid Inside Flask (Rising from bottom y=493 up) -->
+                    <rect id="flaskLiquidSvg" x="60" y="450" width="140" height="45" 
+                          fill="rgba(255, 255, 255, 0.2)" clip-path="url(#flaskClip)" 
+                          style="transition: fill 0.35s ease, y 0.25s ease, height 0.25s ease;" />
+
+                    <!-- Flask Markings -->
+                    <line x1="138" y1="465" x2="148" y2="465" stroke="rgba(255,255,255,0.4)" stroke-width="1.5" />
+                    <line x1="133" y1="445" x2="145" y2="445" stroke="rgba(255,255,255,0.4)" stroke-width="1.5" />
+                    <line x1="128" y1="425" x2="142" y2="425" stroke="rgba(255,255,255,0.4)" stroke-width="1.5" />
+                </svg>
+            </div>
+            <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 6px;">
+                حجم القاعدة المضافة بالسحاحة: <strong id="vAddedTxt" style="color: var(--primary);">0.0 mL</strong>
+            </div>
+        </div>
+
+        <!-- Live Graph & Calculations -->
+        <div class="card">
+            <h2 class="card-title">📈 منحنى المعايرة الحي (pH Curve)</h2>
+            <div class="chart-box">
+                <canvas id="titrationChart" width="450" height="230"></canvas>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div style="font-size: 0.8rem; color: var(--text-muted);">الرقم الهيدروجيني (pH)</div>
+                    <div class="val" id="phVal">1.00</div>
+                    <span class="ph-badge" id="mediumTag">حمضي قوي</span>
+                </div>
+                <div class="stat-card">
+                    <div style="font-size: 0.8rem; color: var(--text-muted);">حجم نقطة التكافؤ (V_eq)</div>
+                    <div class="val" id="eqPointVal" style="color: var(--accent-yellow);">25.0 mL</div>
+                    <span style="font-size: 0.75rem; color: var(--text-muted);">Ma × Va = Mb × Vb</span>
+                </div>
+            </div>
+
+            <div class="equation-box" id="chemMathBox">
+                <!-- Live stoichiometric equations -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const reactionType = document.getElementById('reactionType');
+        const indicatorSelect = document.getElementById('indicatorSelect');
+        const vaSlider = document.getElementById('vaSlider');
+        const maSlider = document.getElementById('maSlider');
+        const mbSlider = document.getElementById('mbSlider');
+        const vaVal = document.getElementById('vaVal');
+        const maVal = document.getElementById('maVal');
+        const mbVal = document.getElementById('mbVal');
+
+        const buretteLiquidSvg = document.getElementById('buretteLiquidSvg');
+        const buretteMeniscus = document.getElementById('buretteMeniscus');
+        const flaskLiquidSvg = document.getElementById('flaskLiquidSvg');
+        const stopcockHandle = document.getElementById('stopcockHandle');
+        const svgDrop = document.getElementById('svgDrop');
+        const vAddedTxt = document.getElementById('vAddedTxt');
+
+        const phVal = document.getElementById('phVal');
+        const mediumTag = document.getElementById('mediumTag');
+        const eqPointVal = document.getElementById('eqPointVal');
+        const chemMathBox = document.getElementById('chemMathBox');
+
+        const addDropBtn = document.getElementById('addDropBtn');
+        const addOneBtn = document.getElementById('addOneBtn');
+        const addFiveBtn = document.getElementById('addFiveBtn');
+        const toggleFlowBtn = document.getElementById('toggleFlowBtn');
+        const resetBtn = document.getElementById('resetBtn');
+
+        const canvas = document.getElementById('titrationChart');
+        const ctx = canvas.getContext('2d');
+
+        let currentVb = 0;
+        let flowInterval = null;
+        let history = []; // array of {v, ph}
+
+        function calculatePH(v_added) {
+            const Va = parseFloat(vaSlider.value);
+            const Ma = parseFloat(maSlider.value);
+            const Mb = parseFloat(mbSlider.value);
+            const type = reactionType.value;
+
+            const n_a = (Ma * Va) / 1000;
+            const n_b = (Mb * v_added) / 1000;
+            const totalVol = (Va + v_added) / 1000;
+
+            let ph = 7.0;
+
+            if (type === 'sa_sb') {
+                if (n_b < n_a) {
+                    const remainingAcid = n_a - n_b;
+                    const h_conc = remainingAcid / totalVol;
+                    ph = -Math.log10(Math.max(h_conc, 1e-14));
+                } else if (Math.abs(n_b - n_a) < 1e-7) {
+                    ph = 7.0;
+                } else {
+                    const excessBase = n_b - n_a;
+                    const oh_conc = excessBase / totalVol;
+                    const poh = -Math.log10(Math.max(oh_conc, 1e-14));
+                    ph = 14 - poh;
+                }
+            } else {
+                // Weak Acid (CH3COOH)
+                const Ka = 1.8e-5;
+                if (v_added === 0) {
+                    const h_conc = Math.sqrt(Ka * Ma);
+                    ph = -Math.log10(h_conc);
+                } else if (n_b < n_a) {
+                    const pKa = -Math.log10(Ka);
+                    const ratio = n_b / (n_a - n_b);
+                    ph = pKa + Math.log10(Math.max(ratio, 0.0001));
+                } else if (Math.abs(n_b - n_a) < 1e-7) {
+                    const C_salt = n_a / totalVol;
+                    const Kb = 1e-14 / Ka;
+                    const oh_conc = Math.sqrt(Kb * C_salt);
+                    ph = 14 - (-Math.log10(oh_conc));
+                } else {
+                    const excessBase = n_b - n_a;
+                    const oh_conc = excessBase / totalVol;
+                    ph = 14 - (-Math.log10(oh_conc));
+                }
+            }
+
+            return Math.min(Math.max(ph, 0), 14);
+        }
+
+        function getIndicatorColor(ph, ind) {
+            if (ind === 'phph') {
+                if (ph < 8.2) return 'rgba(255, 255, 255, 0.2)';
+                if (ph > 10.0) return 'rgba(244, 63, 94, 0.85)';
+                const ratio = (ph - 8.2) / 1.8;
+                return `rgba(244, 63, 94, ${0.2 + ratio * 0.65})`;
+            } else if (ind === 'bb') {
+                if (ph < 6.0) return 'rgba(245, 158, 11, 0.85)'; // Yellow
+                if (ph > 7.6) return 'rgba(2, 132, 199, 0.85)'; // Blue
+                return 'rgba(16, 185, 129, 0.85)'; // Green neutral
+            } else {
+                // Methyl orange
+                if (ph < 3.1) return 'rgba(239, 68, 68, 0.85)';
+                if (ph > 4.4) return 'rgba(245, 158, 11, 0.85)';
+                return 'rgba(249, 115, 22, 0.85)';
+            }
+        }
+
+        function updateSimulation() {
+            const Va = parseFloat(vaSlider.value);
+            const Ma = parseFloat(maSlider.value);
+            const Mb = parseFloat(mbSlider.value);
+            const v_eq = (Ma * Va) / Mb;
+
+            vaVal.textContent = `${Va} mL`;
+            maVal.textContent = `${Ma.toFixed(2)} M`;
+            mbVal.textContent = `${Mb.toFixed(2)} M`;
+            eqPointVal.textContent = `${v_eq.toFixed(1)} mL`;
+            vAddedTxt.textContent = `${currentVb.toFixed(1)} mL`;
+
+            // Calculate pH
+            const ph = calculatePH(currentVb);
+            phVal.textContent = ph.toFixed(2);
+
+            // Burette SVG Visuals:
+            // 0 mL is at y = 55, 50 mL is at y = 280 (height span = 225px)
+            const topY = 55 + (currentVb / 50) * 225;
+            const liquidHeight = Math.max(0, 295 - topY);
+
+            buretteLiquidSvg.setAttribute('y', topY);
+            buretteLiquidSvg.setAttribute('height', liquidHeight);
+            buretteMeniscus.setAttribute('cy', topY);
+
+            // Flask SVG Visuals:
+            // Base is at y = 493. Liquid rises from y=455 up to y=405
+            const flaskLiquidH = 38 + (currentVb / 50) * 45;
+            const flaskLiquidY = 493 - flaskLiquidH;
+            flaskLiquidSvg.setAttribute('y', flaskLiquidY);
+            flaskLiquidSvg.setAttribute('height', flaskLiquidH);
+            flaskLiquidSvg.setAttribute('fill', getIndicatorColor(ph, indicatorSelect.value));
+
+            // Medium Tag
+            if (ph < 6.8) {
+                mediumTag.textContent = 'محلول حمضي (Acidic)';
+                mediumTag.style.background = 'rgba(244, 63, 94, 0.2)';
+                mediumTag.style.color = '#f43f5e';
+            } else if (ph > 7.2) {
+                mediumTag.textContent = 'محلول قاعدي (Basic)';
+                mediumTag.style.background = 'rgba(56, 189, 248, 0.2)';
+                mediumTag.style.color = '#38bdf8';
+            } else {
+                mediumTag.textContent = 'نقطة التعادل / التكافؤ (Neutral)';
+                mediumTag.style.background = 'rgba(16, 185, 129, 0.2)';
+                mediumTag.style.color = '#10b981';
+            }
+
+            // Calculations breakdown
+            chemMathBox.innerHTML = `
+                <strong>المعادلة الستوكيومترية للمعايرة:</strong><br>
+                <code>Ma × Va = Mb × Vb</code> عند نقطة التكافؤ.<br>
+                حجم نقطة التكافؤ: <code>Vb = (${Ma} × ${Va}) / ${Mb} = ${v_eq.toFixed(1)} mL</code>.<br>
+                تركيز [H⁺] الآني: <code>10^(-${ph.toFixed(2)}) = ${(Math.pow(10, -ph)).toExponential(2)} M</code>.
+            `;
+
+            // Record to history
+            if (!history.some(h => Math.abs(h.v - currentVb) < 0.05)) {
+                history.push({ v: currentVb, ph: ph });
+                history.sort((a, b) => a.v - b.v);
+            }
+
+            drawChart(v_eq);
+        }
+
+        function drawChart(v_eq) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const margin = { top: 20, right: 25, bottom: 30, left: 35 };
+            const w = canvas.width - margin.left - margin.right;
+            const h = canvas.height - margin.top - margin.bottom;
+
+            // Axes
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(margin.left, margin.top);
+            ctx.lineTo(margin.left, margin.top + h);
+            ctx.lineTo(margin.left + w, margin.top + h);
+            ctx.stroke();
+
+            // Y Grid (pH 0 to 14)
+            ctx.fillStyle = '#94a3b8';
+            ctx.font = '10px Fira Code';
+            ctx.textAlign = 'right';
+            for (let ph = 0; ph <= 14; ph += 2) {
+                const y = margin.top + h - (ph / 14) * h;
+                ctx.fillText(ph, margin.left - 6, y + 3);
+                ctx.beginPath();
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.06)';
+                ctx.moveTo(margin.left, y);
+                ctx.lineTo(margin.left + w, y);
+                ctx.stroke();
+            }
+
+            // X Labels (Volume 0 to 50 mL)
+            ctx.textAlign = 'center';
+            for (let v = 0; v <= 50; v += 10) {
+                const x = margin.left + (v / 50) * w;
+                ctx.fillText(`${v}`, x, margin.top + h + 16);
+            }
+
+            // Plot curve
+            if (history.length > 1) {
+                ctx.strokeStyle = '#38bdf8';
+                ctx.lineWidth = 2.5;
+                ctx.beginPath();
+                history.forEach((pt, idx) => {
+                    const x = margin.left + Math.min(1, pt.v / 50) * w;
+                    const y = margin.top + h - (pt.ph / 14) * h;
+                    if (idx === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                });
+                ctx.stroke();
+            }
+
+            // Equivalence Point Vertical Guideline
+            if (v_eq <= 50) {
+                const eqX = margin.left + (v_eq / 50) * w;
+                ctx.setLineDash([4, 4]);
+                ctx.strokeStyle = '#f59e0b';
+                ctx.beginPath();
+                ctx.moveTo(eqX, margin.top);
+                ctx.lineTo(eqX, margin.top + h);
+                ctx.stroke();
+                ctx.setLineDash([]);
+                ctx.fillStyle = '#f59e0b';
+                ctx.font = 'bold 10px Tajawal';
+                ctx.fillText('نقطة التكافؤ', eqX, margin.top + 10);
+            }
+
+            // Current point dot
+            const curX = margin.left + Math.min(1, currentVb / 50) * w;
+            const curY = margin.top + h - (calculatePH(currentVb) / 14) * h;
+            ctx.fillStyle = '#f43f5e';
+            ctx.beginPath();
+            ctx.arc(curX, curY, 5.5, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        const splashRipple = document.getElementById('splashRipple');
+
+        function triggerDropAnimation() {
+            const startY = 342;
+            // Get current liquid level in the flask
+            const flaskLiquidY = parseFloat(flaskLiquidSvg.getAttribute('y')) || 450;
+            const endY = flaskLiquidY + 4; // Enter right into the liquid surface
+
+            const startTime = performance.now();
+            const duration = 240; // ms to fall into the flask
+
+            svgDrop.style.opacity = '1';
+            svgDrop.setAttribute('cy', startY);
+
+            function step(now) {
+                const elapsed = now - startTime;
+                const progress = Math.min(1, elapsed / duration);
+                // Gravity acceleration (quad ease-in)
+                const currentY = startY + (endY - startY) * (progress * progress);
+                svgDrop.setAttribute('cy', currentY);
+
+                if (progress < 1) {
+                    requestAnimationFrame(step);
+                } else {
+                    // Drop enters liquid inside the flask and disappears
+                    svgDrop.style.opacity = '0';
+                    svgDrop.setAttribute('cy', startY);
+
+                    // Trigger ripple inside the flask liquid
+                    triggerRipple(endY);
+                }
+            }
+            requestAnimationFrame(step);
+        }
+
+        function triggerRipple(y) {
+            splashRipple.setAttribute('cy', y);
+            splashRipple.setAttribute('rx', '2');
+            splashRipple.setAttribute('ry', '1');
+            splashRipple.style.opacity = '0.9';
+
+            let rStart = performance.now();
+            function expand(now) {
+                const el = now - rStart;
+                const p = Math.min(1, el / 200);
+                splashRipple.setAttribute('rx', 2 + p * 16);
+                splashRipple.setAttribute('ry', 1 + p * 4);
+                splashRipple.style.opacity = (0.9 * (1 - p)).toFixed(2);
+                if (p < 1) {
+                    requestAnimationFrame(expand);
+                } else {
+                    splashRipple.style.opacity = '0';
+                }
+            }
+            requestAnimationFrame(expand);
+        }
+
+        function addVolume(amount) {
+            if (currentVb >= 50) return;
+            currentVb = Math.min(50, currentVb + amount);
+            triggerDropAnimation();
+            updateSimulation();
+        }
+
+        addDropBtn.addEventListener('click', () => addVolume(0.2));
+        addOneBtn.addEventListener('click', () => addVolume(1.0));
+        addFiveBtn.addEventListener('click', () => addVolume(5.0));
+
+        toggleFlowBtn.addEventListener('click', () => {
+            if (flowInterval) {
+                clearInterval(flowInterval);
+                flowInterval = null;
+                stopcockHandle.style.transform = 'rotate(0deg)';
+                toggleFlowBtn.textContent = '🔄 تدفق مستمر';
+            } else {
+                stopcockHandle.style.transform = 'rotate(90deg)';
+                toggleFlowBtn.textContent = '⏸️ إيقاف التدفق';
+                flowInterval = setInterval(() => {
+                    if (currentVb >= 50) {
+                        clearInterval(flowInterval);
+                        flowInterval = null;
+                        stopcockHandle.style.transform = 'rotate(0deg)';
+                        toggleFlowBtn.textContent = '🔄 تدفق مستمر';
+                    } else {
+                        currentVb += 0.4;
+                        triggerDropAnimation();
+                        updateSimulation();
+                    }
+                }, 120);
+            }
+        });
+
+        resetBtn.addEventListener('click', () => {
+            if (flowInterval) clearInterval(flowInterval);
+            flowInterval = null;
+            stopcockHandle.style.transform = 'rotate(0deg)';
+            toggleFlowBtn.textContent = '🔄 تدفق مستمر';
+            currentVb = 0;
+            history = [];
+            updateSimulation();
+        });
+
+        [reactionType, indicatorSelect, vaSlider, maSlider, mbSlider].forEach(el => {
+            el.addEventListener('input', () => {
+                history = [];
+                updateSimulation();
+            });
+        });
+
+        updateSimulation();
+    </script>
+</body>
+</html>

@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>مختبر الذكاء الاصطناعي والشبكات العصبية | مسار علوم الحاسب والهندسة</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=Fira+Code:wght@500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #090d16;
+            --panel: rgba(18, 26, 43, 0.85);
+            --border: rgba(139, 92, 246, 0.25);
+            --primary: #a855f7;
+            --primary-glow: rgba(168, 85, 247, 0.4);
+            --cyan: #06b6d4;
+            --pink: #ec4899;
+            --success: #10b981;
+            --text: #f8fafc;
+            --muted: #94a3b8;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Tajawal', sans-serif; }
+        body {
+            background-color: var(--bg);
+            background-image: radial-gradient(circle at 80% 10%, rgba(168, 85, 247, 0.15) 0%, transparent 50%),
+                              radial-gradient(circle at 10% 90%, rgba(6, 182, 212, 0.12) 0%, transparent 50%);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        header {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 16px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            backdrop-filter: blur(10px);
+        }
+
+        .header-title h1 {
+            font-size: 1.4rem;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .header-title span.glow { color: var(--primary); text-shadow: 0 0 12px var(--primary-glow); }
+        .header-title p { color: var(--muted); font-size: 0.85rem; margin-top: 3px; }
+
+        .badge {
+            background: rgba(168, 85, 247, 0.15);
+            color: var(--primary);
+            border: 1px solid var(--primary);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 15px;
+            flex: 1;
+        }
+
+        @media (max-width: 900px) {
+            .main-grid { grid-template-columns: 1fr; }
+        }
+
+        .card {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            backdrop-filter: blur(10px);
+        }
+
+        .card-title {
+            font-size: 1.05rem;
+            color: var(--primary);
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 6px;
+            font-weight: 700;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        label { font-size: 0.85rem; color: var(--text); display: flex; justify-content: space-between; }
+        .val-badge { color: var(--cyan); font-family: 'Fira Code', monospace; font-weight: bold; }
+
+        select, input[type="range"], button {
+            width: 100%;
+            border-radius: 8px;
+            padding: 10px;
+            border: 1px solid var(--border);
+            background: #0f172a;
+            color: var(--text);
+            font-size: 0.9rem;
+            outline: none;
+        }
+
+        input[type="range"] { height: 6px; accent-color: var(--primary); padding: 0; cursor: pointer; }
+
+        .btn-group { display: flex; gap: 8px; }
+        .btn {
+            background: linear-gradient(135deg, #7c3aed, var(--primary));
+            color: #fff;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+            padding: 11px;
+            border-radius: 8px;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        .btn:hover { opacity: 0.9; transform: translateY(-1px); }
+        .btn.outline { background: #0f172a; border: 1px solid var(--border); color: var(--muted); }
+        .btn.outline:hover { border-color: var(--primary); color: #fff; }
+
+        .canvas-card {
+            background: #060913;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+
+        canvas {
+            width: 100%;
+            max-height: 400px;
+            display: block;
+            touch-action: none;
+            cursor: crosshair;
+        }
+
+        .canvas-toolbar {
+            width: 100%;
+            background: rgba(15, 23, 42, 0.9);
+            padding: 8px 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8rem;
+            border-bottom: 1px solid var(--border);
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .metrics-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .metric-card {
+            background: #0f172a;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 10px;
+            text-align: center;
+        }
+        .metric-card .title { font-size: 0.75rem; color: var(--muted); }
+        .metric-card .val { font-size: 1.25rem; font-weight: bold; color: var(--cyan); font-family: 'Fira Code', monospace; margin-top: 3px; }
+
+        .info-box {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 12px;
+            font-size: 0.85rem;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-title">
+            <h1>🧠 مختبر الذكاء الاصطناعي: <span class="glow">الشبكات العصبية والتصنيف</span></h1>
+            <p>تدريب نموذج تعلم الآلة ورسم حدود القرار (Decision Boundary) تفاعلياً - مسار علوم الحاسب والهندسة</p>
+        </div>
+        <span class="badge">ثالث ثانوي | هندسة وحاسب</span>
+    </header>
+
+    <div class="main-grid">
+        <!-- Controls Sidebar -->
+        <div class="card">
+            <h2 class="card-title">⚙️ بنية النموذج والبيانات</h2>
+
+            <div class="form-group">
+                <label>توزيع البيانات (Dataset):</label>
+                <select id="datasetSelect">
+                    <option value="linear">1. بيانات قابلة للفصل خطياً (Linear)</option>
+                    <option value="circles">2. دوائر متداخلة (Concentric Circles)</option>
+                    <option value="moons">3. شكل هلالي معقد (Two Moons)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>دالة التنشيط (Activation):</label>
+                <select id="activationSelect">
+                    <option value="tanh">دالة الظل الزائدي (Tanh)</option>
+                    <option value="relu">الدالة الخطية المقومة (ReLU)</option>
+                    <option value="sigmoid">الدالة اللوجستية (Sigmoid)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>معدل التعلم (Learning Rate): <span class="val-badge" id="lrTxt">0.05</span></label>
+                <input type="range" id="lrSlider" min="0.01" max="0.2" step="0.01" value="0.05">
+            </div>
+
+            <div class="form-group">
+                <label>عدد العصبونات الخفية (Hidden Neurons): <span class="val-badge" id="neuronsTxt">4</span></label>
+                <input type="range" id="neuronsSlider" min="2" max="8" step="1" value="4">
+            </div>
+
+            <div class="btn-group">
+                <button class="btn" id="trainBtn">⚡ بدء التدريب (Train)</button>
+                <button class="btn outline" id="resetBtn">🔄 مسح</button>
+            </div>
+
+            <div class="info-box">
+                <strong>تعليمات الجوال واللمس:</strong><br>
+                انقر بإصبعك على شاشة الرسم لإضافة نقاط جديدة:<br>
+                🔵 نقاط الفئة الأولى (أزرق) | 🟣 نقاط الفئة الثانية (بنفسجي).
+            </div>
+        </div>
+
+        <!-- Canvas and Metrics -->
+        <div style="display: flex; flex-direction: column; gap: 15px;">
+            <div class="canvas-card">
+                <div class="canvas-toolbar">
+                    <span style="color: var(--muted);">📍 فضاء البيانات وحدود القرار اللحظية</span>
+                    <div style="display: flex; gap: 10px;">
+                        <button id="togglePointClass" style="width: auto; padding: 4px 10px; font-size: 0.8rem; background: var(--cyan); color: #000; border: none; font-weight: bold; border-radius: 6px;">
+                            وضع النقاط: الفئة 1 (أزرق)
+                        </button>
+                    </div>
+                </div>
+                <canvas id="aiCanvas" width="600" height="380"></canvas>
+            </div>
+
+            <div class="metrics-row">
+                <div class="metric-card">
+                    <div class="title">عدد دورات التدريب (Epochs)</div>
+                    <div class="val" id="epochVal">0</div>
+                </div>
+                <div class="metric-card">
+                    <div class="title">دقة التصنيف (Accuracy)</div>
+                    <div class="val" id="accVal" style="color: var(--success);">0%</div>
+                </div>
+                <div class="metric-card">
+                    <div class="title">دالة الخسارة (Loss)</div>
+                    <div class="val" id="lossVal" style="color: var(--pink);">0.00</div>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <strong>مفاهيم منهج الذكاء الاصطناعي 1:</strong><br>
+                تقوم الشبكة العصبية بوزن المدخلات ($W \cdot X + b$) وتطبيق دالة التنشيط لتوليد حدود قرار غير خطية تفصل بين الفئات، مع تقليل دالة الخطأ باستخدام خوارزمية الانحدار التدريجي (Gradient Descent).
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('aiCanvas');
+        const ctx = canvas.getContext('2d');
+
+        const datasetSelect = document.getElementById('datasetSelect');
+        const activationSelect = document.getElementById('activationSelect');
+        const lrSlider = document.getElementById('lrSlider');
+        const neuronsSlider = document.getElementById('neuronsSlider');
+        const lrTxt = document.getElementById('lrTxt');
+        const neuronsTxt = document.getElementById('neuronsTxt');
+
+        const trainBtn = document.getElementById('trainBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const togglePointClass = document.getElementById('togglePointClass');
+
+        const epochVal = document.getElementById('epochVal');
+        const accVal = document.getElementById('accVal');
+        const lossVal = document.getElementById('lossVal');
+
+        let isTraining = false;
+        let trainInterval = null;
+        let currentAddLabel = 1; // 1 = blue, -1 = pink
+        let points = []; // {x, y, label}
+        let weights = [];
+        let bias = 0;
+        let epoch = 0;
+
+        function initDataset(type) {
+            points = [];
+            epoch = 0;
+            epochVal.textContent = '0';
+            accVal.textContent = '0%';
+            lossVal.textContent = '0.00';
+
+            const count = 40;
+            if (type === 'linear') {
+                for (let i = 0; i < count; i++) {
+                    const x = (Math.random() - 0.5) * 1.6;
+                    const y = (Math.random() - 0.5) * 1.6;
+                    const label = (y > x * 0.8 + 0.1) ? 1 : -1;
+                    points.push({ x: x + (label * 0.1), y: y, label: label });
+                }
+            } else if (type === 'circles') {
+                for (let i = 0; i < count; i++) {
+                    const r = Math.random() < 0.5 ? Math.random() * 0.4 : 0.6 + Math.random() * 0.35;
+                    const ang = Math.random() * Math.PI * 2;
+                    const label = r < 0.45 ? 1 : -1;
+                    points.push({ x: r * Math.cos(ang), y: r * Math.sin(ang), label: label });
+                }
+            } else {
+                // Moons
+                for (let i = 0; i < count / 2; i++) {
+                    const ang = (i / (count / 2)) * Math.PI;
+                    points.push({ x: Math.cos(ang) * 0.5 - 0.25 + (Math.random() * 0.1), y: Math.sin(ang) * 0.5 - 0.1, label: 1 });
+                    points.push({ x: 1 - Math.cos(ang) * 0.5 - 0.25 + (Math.random() * 0.1), y: 1 - Math.sin(ang) * 0.5 - 0.6, label: -1 });
+                }
+            }
+            initWeights();
+            render();
+        }
+
+        function initWeights() {
+            const hCount = parseInt(neuronsSlider.value);
+            weights = [];
+            for (let i = 0; i < hCount; i++) {
+                weights.push({ w1: (Math.random() - 0.5), w2: (Math.random() - 0.5), b: (Math.random() - 0.5), outW: (Math.random() - 0.5) });
+            }
+            bias = 0;
+        }
+
+        function activate(v, act) {
+            if (act === 'relu') return Math.max(0, v);
+            if (act === 'sigmoid') return 1 / (1 + Math.exp(-v));
+            return Math.tanh(v);
+        }
+
+        function predict(x, y) {
+            const act = activationSelect.value;
+            let sum = bias;
+            weights.forEach(w => {
+                const hiddenVal = activate(w.w1 * x + w.w2 * y + w.b, act);
+                sum += hiddenVal * w.outW;
+            });
+            return Math.tanh(sum);
+        }
+
+        function trainStep() {
+            epoch += 1;
+            const lr = parseFloat(lrSlider.value);
+            const act = activationSelect.value;
+            let totalLoss = 0;
+            let correct = 0;
+
+            points.forEach(p => {
+                const pred = predict(p.x, p.y);
+                const err = p.label - pred;
+                totalLoss += err * err;
+
+                if ((pred >= 0 && p.label === 1) || (pred < 0 && p.label === -1)) correct++;
+
+                // Backprop update
+                bias += lr * err * 0.2;
+                weights.forEach(w => {
+                    const hVal = activate(w.w1 * p.x + w.w2 * p.y + w.b, act);
+                    w.outW += lr * err * hVal;
+                    const dH = (1 - hVal * hVal) * w.outW * err;
+                    w.w1 += lr * dH * p.x;
+                    w.w2 += lr * dH * p.y;
+                    w.b += lr * dH;
+                });
+            });
+
+            epochVal.textContent = epoch;
+            const accuracy = Math.round((correct / points.length) * 100);
+            accVal.textContent = `${accuracy}%`;
+            lossVal.textContent = (totalLoss / points.length).toFixed(3);
+
+            render();
+            if (accuracy >= 98 || epoch >= 250) {
+                toggleTraining();
+            }
+        }
+
+        function render() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const w = canvas.width;
+            const h = canvas.height;
+            const cx = w / 2;
+            const cy = h / 2;
+            const scale = Math.min(w, h) / 2.2;
+
+            // Render Decision Boundary Heatmap (Low res grid for speed)
+            const step = 8;
+            for (let px = 0; px < w; px += step) {
+                for (let py = 0; py < h; py += step) {
+                    const mx = (px - cx) / scale;
+                    const my = (py - cy) / scale;
+                    const p = predict(mx, my);
+                    if (p > 0) {
+                        ctx.fillStyle = `rgba(6, 182, 212, ${Math.min(0.35, p * 0.4)})`;
+                    } else {
+                        ctx.fillStyle = `rgba(236, 72, 153, ${Math.min(0.35, -p * 0.4)})`;
+                    }
+                    ctx.fillRect(px, py, step, step);
+                }
+            }
+
+            // Grid lines
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(cx, 0); ctx.lineTo(cx, h);
+            ctx.moveTo(0, cy); ctx.lineTo(w, cy);
+            ctx.stroke();
+
+            // Render Data Points
+            points.forEach(pt => {
+                const px = cx + pt.x * scale;
+                const py = cy + pt.y * scale;
+
+                ctx.beginPath();
+                ctx.arc(px, py, 6, 0, Math.PI * 2);
+                ctx.fillStyle = pt.label === 1 ? '#06b6d4' : '#ec4899';
+                ctx.shadowColor = pt.label === 1 ? '#06b6d4' : '#ec4899';
+                ctx.shadowBlur = 8;
+                ctx.fill();
+                ctx.strokeStyle = '#fff';
+                ctx.lineWidth = 1.5;
+                ctx.stroke();
+                ctx.shadowBlur = 0;
+            });
+        }
+
+        function toggleTraining() {
+            if (isTraining) {
+                clearInterval(trainInterval);
+                trainInterval = null;
+                isTraining = false;
+                trainBtn.textContent = '⚡ استئناف التدريب (Train)';
+            } else {
+                isTraining = true;
+                trainBtn.textContent = '⏸️ إيقاف مؤقت (Pause)';
+                trainInterval = setInterval(trainStep, 60);
+            }
+        }
+
+        trainBtn.addEventListener('click', toggleTraining);
+
+        resetBtn.addEventListener('click', () => {
+            if (isTraining) toggleTraining();
+            initDataset(datasetSelect.value);
+        });
+
+        datasetSelect.addEventListener('change', () => {
+            if (isTraining) toggleTraining();
+            initDataset(datasetSelect.value);
+        });
+
+        lrSlider.addEventListener('input', (e) => lrTxt.textContent = e.target.value);
+        neuronsSlider.addEventListener('input', (e) => {
+            neuronsTxt.textContent = e.target.value;
+            if (isTraining) toggleTraining();
+            initWeights();
+            render();
+        });
+
+        // Add Points via Click / Touch on Canvas
+        function handleAddPoint(e) {
+            const rect = canvas.getBoundingClientRect();
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            const px = (clientX - rect.left) * (canvas.width / rect.width);
+            const py = (clientY - rect.top) * (canvas.height / rect.height);
+
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+            const scale = Math.min(canvas.width, canvas.height) / 2.2;
+            const mx = (px - cx) / scale;
+            const my = (py - cy) / scale;
+
+            points.push({ x: mx, y: my, label: currentAddLabel });
+            render();
+        }
+
+        canvas.addEventListener('click', handleAddPoint);
+        canvas.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            handleAddPoint(e);
+        });
+
+        togglePointClass.addEventListener('click', () => {
+            if (currentAddLabel === 1) {
+                currentAddLabel = -1;
+                togglePointClass.textContent = 'وضع النقاط: الفئة 2 (وردي)';
+                togglePointClass.style.background = 'var(--pink)';
+                togglePointClass.style.color = '#fff';
+            } else {
+                currentAddLabel = 1;
+                togglePointClass.textContent = 'وضع النقاط: الفئة 1 (أزرق)';
+                togglePointClass.style.background = 'var(--cyan)';
+                togglePointClass.style.color = '#000';
+            }
+        });
+
+        initDataset('linear');
+    </script>
+</body>
+</html>

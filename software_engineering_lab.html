@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>مختبر هندسة البرمجيات والتصميم الهندسي | مسار علوم الحاسب والهندسة</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=Fira+Code:wght@500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0b1120;
+            --panel: rgba(20, 30, 55, 0.85);
+            --border: rgba(56, 189, 248, 0.25);
+            --primary: #38bdf8;
+            --primary-glow: rgba(56, 189, 248, 0.4);
+            --accent: #f59e0b;
+            --success: #10b981;
+            --danger: #ef4444;
+            --text: #f8fafc;
+            --muted: #94a3b8;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Tajawal', sans-serif; }
+        body {
+            background-color: var(--bg);
+            background-image: radial-gradient(circle at 50% 10%, rgba(56, 189, 248, 0.12) 0%, transparent 60%);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        header {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 16px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            backdrop-filter: blur(10px);
+        }
+
+        .header-title h1 { font-size: 1.4rem; color: #fff; display: flex; align-items: center; gap: 8px; }
+        .header-title span.glow { color: var(--primary); text-shadow: 0 0 12px var(--primary-glow); }
+        .header-title p { color: var(--muted); font-size: 0.85rem; margin-top: 3px; }
+
+        .badge {
+            background: rgba(56, 189, 248, 0.15);
+            color: var(--primary);
+            border: 1px solid var(--primary);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .tab-bar {
+            display: flex;
+            gap: 8px;
+            background: var(--panel);
+            padding: 6px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            overflow-x: auto;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            color: var(--muted);
+            padding: 9px 18px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s;
+            white-space: nowrap;
+        }
+        .tab-btn.active {
+            background: var(--primary);
+            color: #0b1120;
+            font-weight: 800;
+        }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.25s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+        .card {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            backdrop-filter: blur(10px);
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            color: var(--primary);
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 6px;
+            font-weight: bold;
+        }
+
+        /* Module 1: Logic Gates Simulator */
+        .circuit-station {
+            background: #060a14;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 25px 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .switch-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .toggle-switch {
+            width: 55px;
+            height: 55px;
+            border-radius: 12px;
+            background: #1e293b;
+            border: 2px solid var(--muted);
+            color: var(--muted);
+            font-size: 1.4rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            touch-action: manipulation;
+        }
+        .toggle-switch.on {
+            background: rgba(16, 185, 129, 0.25);
+            border-color: var(--success);
+            color: #10b981;
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
+        }
+
+        .gate-selector {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .gate-symbol {
+            padding: 18px 24px;
+            background: #1e293b;
+            border: 2px solid var(--primary);
+            border-radius: 14px;
+            font-family: 'Fira Code', monospace;
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: var(--primary);
+            box-shadow: 0 0 20px var(--primary-glow);
+        }
+
+        .lamp-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .led-lamp {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #1e293b;
+            border: 3px solid #475569;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            transition: all 0.3s;
+        }
+        .led-lamp.lit {
+            background: #facc15;
+            border-color: #fef08a;
+            box-shadow: 0 0 35px #facc15;
+            color: #000;
+        }
+
+        /* Truth Table */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: center;
+            background: #080e1b;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            font-size: 0.9rem;
+        }
+        th, td { padding: 10px; border-bottom: 1px solid var(--border); }
+        th { background: #1e293b; color: var(--primary); }
+        tr.active-row { background: rgba(56, 189, 248, 0.15); font-weight: bold; }
+
+        /* Module 2: Agile Scrum Board */
+        .kanban-board {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 12px;
+        }
+
+        .kanban-col {
+            background: #080e1b;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .col-header {
+            font-size: 0.92rem;
+            font-weight: 700;
+            color: var(--primary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .kanban-task {
+            background: #1e293b;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            font-size: 0.85rem;
+            transition: 0.2s;
+        }
+        .kanban-task:hover { border-color: var(--primary); }
+
+        .task-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 4px;
+        }
+
+        .task-btn {
+            background: rgba(56, 189, 248, 0.1);
+            border: 1px solid var(--border);
+            color: var(--primary);
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            cursor: pointer;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            border-radius: 8px;
+            padding: 10px;
+            border: 1px solid var(--border);
+            background: #090e17;
+            color: var(--text);
+            font-size: 0.9rem;
+            outline: none;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-title">
+            <h1>💻 مختبر هندسة البرمجيات والتصميم الهندسي</h1>
+            <p>محاكاة البوابات الرقمية ولوحة تطوير البرمجيات السريعة (Agile Scrum) - مسار علوم الحاسب والهندسة</p>
+        </div>
+        <span class="badge">ثالث ثانوي | هندسة وبرمجيات</span>
+    </header>
+
+    <div class="tab-bar">
+        <button class="tab-btn active" data-tab="tab-gates">⚡ محاكي البوابات المنطقية (Logic Gates)</button>
+        <button class="tab-btn" data-tab="tab-agile">📋 لوحة السبرنت الرشيقة (Agile Kanban)</button>
+    </div>
+
+    <!-- 1. Logic Gates -->
+    <div class="tab-content active" id="tab-gates">
+        <div class="card">
+            <h2 class="card-title">1. مختبر المحاكاة التفاعلي للبوابات المنطقية (Logic Simulator)</h2>
+            <p style="font-size: 0.85rem; color: var(--muted);">انقر على مفاتيح الإدخال A و B لتغيير حالتها (0 أو 1) ولاحظ إضاءة مخرج الدائرة الرقمية وجدول الصواب:</p>
+
+            <div class="circuit-station">
+                <!-- Inputs -->
+                <div style="display: flex; flex-direction: column; gap: 14px;">
+                    <div class="switch-box">
+                        <span style="font-size: 0.8rem; color: var(--muted);">المُدخل A</span>
+                        <button class="toggle-switch" id="switchA">0</button>
+                    </div>
+                    <div class="switch-box" id="boxB">
+                        <span style="font-size: 0.8rem; color: var(--muted);">المُدخل B</span>
+                        <button class="toggle-switch" id="switchB">0</button>
+                    </div>
+                </div>
+
+                <!-- Gate Selector -->
+                <div class="gate-selector">
+                    <span style="font-size: 0.8rem; color: var(--muted);">نوع البوابة:</span>
+                    <select id="gateSelect" style="width: 140px; text-align: center; font-weight: bold; background: #1e293b; color: var(--primary);">
+                        <option value="AND">AND (و)</option>
+                        <option value="OR">OR (أو)</option>
+                        <option value="NOT">NOT (النفي)</option>
+                        <option value="NAND">NAND (نفي و)</option>
+                        <option value="NOR">NOR (نفي أو)</option>
+                        <option value="XOR">XOR (أو الحصرية)</option>
+                    </select>
+                    <div class="gate-symbol" id="gateSymbol">AND</div>
+                </div>
+
+                <!-- Output LED -->
+                <div class="lamp-box">
+                    <span style="font-size: 0.8rem; color: var(--muted);">المُخرج Y</span>
+                    <div class="led-lamp" id="ledLamp">💡</div>
+                    <strong id="outBitTxt" style="font-family: 'Fira Code'; font-size: 1.2rem; color: var(--muted);">0</strong>
+                </div>
+            </div>
+
+            <!-- Truth Table -->
+            <div style="margin-top: 10px;">
+                <h3 style="font-size: 0.95rem; color: var(--primary); margin-bottom: 8px;">جدول الصواب (Truth Table):</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>المدخل A</th>
+                            <th id="thB">المدخل B</th>
+                            <th>المخرج المتوقع Y</th>
+                        </tr>
+                    </thead>
+                    <tbody id="truthTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. Agile Scrum -->
+    <div class="tab-content" id="tab-agile">
+        <div class="card">
+            <h2 class="card-title">2. لوحة إدارة المشاريع البرمجية التفاعلية (Agile Kanban Board)</h2>
+
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <input type="text" id="newTaskInput" placeholder="أدخل اسم مهمة برمجية جديدة (مثل: بناء واجهة المصادقة)..." style="flex: 1; min-width: 220px;">
+                <button class="btn" id="addTaskBtn" style="width: auto; padding: 10px 18px;">+ إضافة مهمة</button>
+            </div>
+
+            <div class="kanban-board">
+                <div class="kanban-col" id="colTodo">
+                    <div class="col-header"><span>📌 قيد الانتظار (To Do)</span> <span id="cntTodo" style="color: var(--muted);">0</span></div>
+                    <div class="task-list" id="listTodo"></div>
+                </div>
+
+                <div class="kanban-col" id="colProgress">
+                    <div class="col-header"><span>⚡ جاري التطوير (In Progress)</span> <span id="cntProgress" style="color: var(--muted);">0</span></div>
+                    <div class="task-list" id="listProgress"></div>
+                </div>
+
+                <div class="kanban-col" id="colReview">
+                    <div class="col-header"><span>🧪 مراجعة واختبار (Testing)</span> <span id="cntReview" style="color: var(--muted);">0</span></div>
+                    <div class="task-list" id="listReview"></div>
+                </div>
+
+                <div class="kanban-col" id="colDone">
+                    <div class="col-header"><span>✅ مكتمل (Done)</span> <span id="cntDone" style="color: var(--success);">0</span></div>
+                    <div class="task-list" id="listDone"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tabs
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        const tabContents = document.querySelectorAll('.tab-content');
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                tabBtns.forEach(b => b.classList.remove('active'));
+                tabContents.forEach(c => c.classList.remove('active'));
+                btn.classList.add('active');
+                document.getElementById(btn.dataset.tab).classList.add('active');
+            });
+        });
+
+        // 1. Logic Gate Simulation
+        const switchA = document.getElementById('switchA');
+        const switchB = document.getElementById('switchB');
+        const boxB = document.getElementById('boxB');
+        const gateSelect = document.getElementById('gateSelect');
+        const gateSymbol = document.getElementById('gateSymbol');
+        const ledLamp = document.getElementById('ledLamp');
+        const outBitTxt = document.getElementById('outBitTxt');
+        const thB = document.getElementById('thB');
+        const truthTableBody = document.getElementById('truthTableBody');
+
+        let a = 0;
+        let b = 0;
+
+        function evalGate(type, inA, inB) {
+            switch(type) {
+                case 'AND': return (inA && inB) ? 1 : 0;
+                case 'OR': return (inA || inB) ? 1 : 0;
+                case 'NOT': return inA ? 0 : 1;
+                case 'NAND': return !(inA && inB) ? 1 : 0;
+                case 'NOR': return !(inA || inB) ? 1 : 0;
+                case 'XOR': return (inA !== inB) ? 1 : 0;
+                default: return 0;
+            }
+        }
+
+        function updateCircuit() {
+            const gate = gateSelect.value;
+            gateSymbol.textContent = gate;
+
+            if (gate === 'NOT') {
+                boxB.style.display = 'none';
+                thB.style.display = 'none';
+            } else {
+                boxB.style.display = 'flex';
+                thB.style.display = '';
+            }
+
+            const out = evalGate(gate, a, b);
+            if (out === 1) {
+                ledLamp.classList.add('lit');
+                outBitTxt.textContent = '1 (تشغيل)';
+                outBitTxt.style.color = '#facc15';
+            } else {
+                ledLamp.classList.remove('lit');
+                outBitTxt.textContent = '0 (إيقاف)';
+                outBitTxt.style.color = 'var(--muted)';
+            }
+
+            // Build Truth Table
+            truthTableBody.innerHTML = '';
+            const combinations = (gate === 'NOT') ? [[0], [1]] : [[0,0], [0,1], [1,0], [1,1]];
+
+            combinations.forEach(combo => {
+                const tr = document.createElement('tr');
+                const rowOut = (gate === 'NOT') ? evalGate(gate, combo[0], 0) : evalGate(gate, combo[0], combo[1]);
+
+                const isCurrent = (gate === 'NOT') ? (combo[0] === a) : (combo[0] === a && combo[1] === b);
+                if (isCurrent) tr.classList.add('active-row');
+
+                if (gate === 'NOT') {
+                    tr.innerHTML = `<td>${combo[0]}</td><td style="color: ${rowOut ? '#facc15' : 'inherit'}; font-weight: bold;">${rowOut}</td>`;
+                } else {
+                    tr.innerHTML = `<td>${combo[0]}</td><td>${combo[1]}</td><td style="color: ${rowOut ? '#facc15' : 'inherit'}; font-weight: bold;">${rowOut}</td>`;
+                }
+                truthTableBody.appendChild(tr);
+            });
+        }
+
+        switchA.addEventListener('click', () => {
+            a = a === 0 ? 1 : 0;
+            switchA.textContent = a;
+            switchA.classList.toggle('on', a === 1);
+            updateCircuit();
+        });
+
+        switchB.addEventListener('click', () => {
+            b = b === 0 ? 1 : 0;
+            switchB.textContent = b;
+            switchB.classList.toggle('on', b === 1);
+            updateCircuit();
+        });
+
+        gateSelect.addEventListener('change', updateCircuit);
+        updateCircuit();
+
+        // 2. Agile Kanban Board
+        let tasks = [
+            { id: 1, text: "تحليل متطلبات المستخدم ودراسة الجدوى", status: "colDone" },
+            { id: 2, text: "تصميم المخطط الهيكلي لقاعدة البيانات (ERD)", status: "colReview" },
+            { id: 3, text: "برمجة واجهات الويب وربط الخادم المحلي", status: "colProgress" },
+            { id: 4, text: "إجراء اختبارات الأمان واكتشاف الثغرات", status: "colTodo" }
+        ];
+
+        const listTodo = document.getElementById('listTodo');
+        const listProgress = document.getElementById('listProgress');
+        const listReview = document.getElementById('listReview');
+        const listDone = document.getElementById('listDone');
+
+        const newTaskInput = document.getElementById('newTaskInput');
+        const addTaskBtn = document.getElementById('addTaskBtn');
+
+        function renderKanban() {
+            listTodo.innerHTML = '';
+            listProgress.innerHTML = '';
+            listReview.innerHTML = '';
+            listDone.innerHTML = '';
+
+            const cols = { colTodo: listTodo, colProgress: listProgress, colReview: listReview, colDone: listDone };
+            const counts = { colTodo: 0, colProgress: 0, colReview: 0, colDone: 0 };
+
+            tasks.forEach(t => {
+                counts[t.status]++;
+                const card = document.createElement('div');
+                card.className = 'kanban-task';
+                card.innerHTML = `
+                    <span>${t.text}</span>
+                    <div class="task-actions">
+                        ${t.status !== 'colTodo' ? `<button class="task-btn" onclick="moveTask(${t.id}, -1)">◀ للخلف</button>` : '<span></span>'}
+                        ${t.status !== 'colDone' ? `<button class="task-btn" onclick="moveTask(${t.id}, 1)">للأمام ▶</button>` : '<span></span>'}
+                    </div>
+                `;
+                cols[t.status].appendChild(card);
+            });
+
+            document.getElementById('cntTodo').textContent = counts.colTodo;
+            document.getElementById('cntProgress').textContent = counts.colProgress;
+            document.getElementById('cntReview').textContent = counts.colReview;
+            document.getElementById('cntDone').textContent = counts.colDone;
+        }
+
+        window.moveTask = function(id, dir) {
+            const order = ['colTodo', 'colProgress', 'colReview', 'colDone'];
+            const task = tasks.find(t => t.id === id);
+            if (!task) return;
+            const currentIdx = order.indexOf(task.status);
+            const newIdx = currentIdx + dir;
+            if (newIdx >= 0 && newIdx < order.length) {
+                task.status = order[newIdx];
+                renderKanban();
+            }
+        };
+
+        addTaskBtn.addEventListener('click', () => {
+            const val = newTaskInput.value.trim();
+            if (!val) return;
+            tasks.push({ id: Date.now(), text: val, status: 'colTodo' });
+            newTaskInput.value = '';
+            renderKanban();
+        });
+
+        renderKanban();
+    </script>
+</body>
+</html>

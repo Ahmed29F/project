@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>المحراب الأدبي: المحلل البلاغي وموزّن الأبيات | لغة عربية 3</title>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0c1a17;
+            --panel-bg: rgba(18, 38, 34, 0.85);
+            --border-color: rgba(212, 175, 55, 0.3);
+            --gold: #d4af37;
+            --gold-light: #f3e5ab;
+            --emerald: #2d6a4f;
+            --emerald-light: #52b788;
+            --ruby: #c1121f;
+            --text-main: #f8f9fa;
+            --text-muted: #b7c4c1;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Tajawal', sans-serif;
+        }
+
+        html { -webkit-text-size-adjust: 100%; }
+        body {
+            background-color: var(--bg-color);
+            background-image: radial-gradient(circle at 50% 0%, rgba(45, 106, 79, 0.3) 0%, transparent 60%);
+            color: var(--text-main);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        header {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 22px 35px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+            position: relative;
+        }
+
+        header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 20px;
+            right: 20px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+        }
+
+        .header-title h1 {
+            font-family: 'Amiri', serif;
+            font-size: 2.1rem;
+            color: var(--gold-light);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-title p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-top: 5px;
+        }
+
+        .badge {
+            background: rgba(212, 175, 55, 0.1);
+            color: var(--gold);
+            border: 1px solid var(--gold);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+
+        /* Nav Tabs */
+        .tabs-nav {
+            display: flex;
+            gap: 12px;
+            background: var(--panel-bg);
+            padding: 8px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            overflow-x: auto;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            padding: 10px 22px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tab-btn:hover {
+            color: var(--gold-light);
+            background: rgba(212, 175, 55, 0.08);
+        }
+
+        .tab-btn.active {
+            background: var(--gold);
+            color: #0c1a17;
+            font-weight: 800;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.35);
+        }
+
+        /* Content Sections */
+        .section-view {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .section-view.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+        }
+
+        /* Module 1: Timeline */
+        .eras-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 16px;
+            margin-top: 15px;
+        }
+
+        .era-card {
+            background: rgba(12, 26, 23, 0.7);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 18px;
+            cursor: pointer;
+            transition: all 0.25s;
+        }
+
+        .era-card:hover, .era-card.selected {
+            border-color: var(--gold);
+            transform: translateY(-3px);
+            background: rgba(45, 106, 79, 0.25);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+        }
+
+        .era-title {
+            font-family: 'Amiri', serif;
+            font-size: 1.35rem;
+            color: var(--gold);
+            margin-bottom: 6px;
+        }
+
+        .era-desc {
+            font-size: 0.88rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        .era-detail-box {
+            margin-top: 20px;
+            background: rgba(12, 26, 23, 0.9);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 25px;
+        }
+
+        /* Module 2: Rhetorical Dissection */
+        .poetry-display {
+            background: #07110f;
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 35px;
+            text-align: center;
+            margin-bottom: 25px;
+            box-shadow: inset 0 0 40px rgba(0,0,0,0.6);
+        }
+
+        .verse-line {
+            font-family: 'Amiri', serif;
+            font-size: 1.85rem;
+            line-height: 2.2;
+            color: var(--gold-light);
+        }
+
+        .rhetoric-word {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+            border-bottom: 2px dashed var(--gold);
+        }
+
+        .rhetoric-word:hover, .rhetoric-word.highlighted {
+            background: rgba(212, 175, 55, 0.25);
+            color: #fff;
+            transform: scale(1.05);
+        }
+
+        .dissection-detail {
+            background: rgba(12, 26, 23, 0.8);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            display: none;
+        }
+
+        .dissection-detail.show {
+            display: block;
+            animation: fadeIn 0.2s ease;
+        }
+
+        /* Module 3: Meter & Audio Rhythm */
+        .meter-container {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 850px) {
+            .meter-container { grid-template-columns: 1fr; }
+        }
+
+        .meter-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .meter-item {
+            background: rgba(12, 26, 23, 0.7);
+            border: 1px solid var(--border-color);
+            padding: 14px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .meter-item.active {
+            border-color: var(--gold);
+            background: rgba(212, 175, 55, 0.15);
+        }
+
+        .meter-canvas-card {
+            background: #07110f;
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .syllables-row {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .syllable-box {
+            padding: 10px 16px;
+            border-radius: 8px;
+            background: #122622;
+            border: 1px solid var(--border-color);
+            text-align: center;
+            transition: all 0.15s;
+        }
+
+        .syllable-box.beat-active {
+            background: var(--gold);
+            color: #0c1a17;
+            transform: scale(1.15);
+            box-shadow: 0 0 20px var(--gold);
+        }
+
+        .play-audio-btn {
+            background: linear-gradient(135deg, var(--gold), #b8972f);
+            color: #0c1a17;
+            font-weight: bold;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 30px;
+            font-size: 1.05rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: 0.2s;
+        }
+
+        .play-audio-btn:hover {
+            transform: scale(1.03);
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
+        }
+
+        /* Quiz Module */
+        .quiz-card {
+            background: rgba(12, 26, 23, 0.85);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 25px;
+            margin-top: 15px;
+        }
+
+        .option-btn {
+            width: 100%;
+            text-align: right;
+            background: #122622;
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 14px 20px;
+            border-radius: 10px;
+            margin-top: 10px;
+            cursor: pointer;
+            font-size: 0.98rem;
+            transition: 0.2s;
+        }
+
+        .option-btn:hover {
+            background: rgba(212, 175, 55, 0.1);
+            border-color: var(--gold);
+        }
+
+        .option-btn.correct {
+            background: rgba(45, 106, 79, 0.6);
+            border-color: var(--emerald-light);
+            color: #fff;
+        }
+
+        .option-btn.wrong {
+            background: rgba(193, 18, 31, 0.6);
+            border-color: var(--ruby);
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-title">
+            <h1>📜 المحراب الأدبي: المحلل البلاغي وموزّن الأبيات</h1>
+            <p>منصة تفاعلية لاستكشاف الأدب، التذوق البلاغي، والتقطيع العروضي الصوتي - لغة عربية 3</p>
+        </div>
+        <span class="badge">المملكة العربية السعودية | ثالث ثانوي</span>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <div class="tabs-nav">
+        <button class="tab-btn active" data-tab="tab-rhetoric">🔍 المشرحة البلاغية التفاعلية</button>
+        <button class="tab-btn" data-tab="tab-meter">🎵 موزّن التفعيلات والإيقاع الصوتي</button>
+        <button class="tab-btn" data-tab="tab-eras">🏛️ خزانة العصور الأدبية</button>
+        <button class="tab-btn" data-tab="tab-quiz">🏆 اختبار التذوق البلاغي</button>
+    </div>
+
+    <!-- 1. Rhetoric Section -->
+    <div class="section-view active" id="tab-rhetoric">
+        <div class="card">
+            <h2 style="font-family: 'Amiri', serif; color: var(--gold); margin-bottom: 8px;">تفكيك الصور البيانية والمحسنات البديعية</h2>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">انقر فوق الكلمات المميزة بالخط المنقط في البيت الشعري للكشف عن التحليل البلاغي وسر الجمال:</p>
+
+            <div class="poetry-display">
+                <div class="verse-line">
+                    وَإِذا <span class="rhetoric-word" data-id="r1">المَنِيَّةُ أَنشَبَت أَظفارَها</span>
+                    ...
+                    أَلفَيتَ كُلَّ <span class="rhetoric-word" data-id="r2">تَميمَةٍ لا تَنفَعُ</span>
+                </div>
+                <div style="font-size: 0.9rem; color: var(--gold); margin-top: 10px;">— الشاعر: أبو ذؤيب الهذلي</div>
+            </div>
+
+            <div class="poetry-display" style="margin-top: 15px;">
+                <div class="verse-line">
+                    <span class="rhetoric-word" data-id="r3">سَالَ قَلْبِي</span> عَنِ الهَوَى فَتَوَلَّى
+                    ...
+                    وَكَأَنَّ <span class="rhetoric-word" data-id="r4">الدُّمُوعَ عِقْدُ جُمَانِ</span>
+                </div>
+                <div style="font-size: 0.9rem; color: var(--gold); margin-top: 10px;">— نموذج من روائع الغزل العذري</div>
+            </div>
+
+            <!-- Dissection Result Card -->
+            <div class="dissection-detail" id="dissectionBox">
+                <h3 id="dissectTitle" style="color: var(--gold); font-family: 'Amiri', serif; font-size: 1.4rem;">نوع الصورة</h3>
+                <div style="margin-top: 10px; font-size: 0.95rem; line-height: 1.7;" id="dissectBody"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. Meter Section -->
+    <div class="section-view" id="tab-meter">
+        <div class="card">
+            <h2 style="font-family: 'Amiri', serif; color: var(--gold); margin-bottom: 15px;">موزّن بحور الشعر والتقطيع الصوتي الحركي</h2>
+            
+            <div class="meter-container">
+                <div class="meter-list">
+                    <div class="meter-item active" data-meter="taweel">
+                        <strong style="color: var(--gold-light);">بحر الطويل</strong>
+                        <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">فَعُولُنْ مَفَاعِيلُنْ فَعُولُنْ مَفَاعِلُنْ</p>
+                    </div>
+                    <div class="meter-item" data-meter="baseet">
+                        <strong style="color: var(--gold-light);">بحر البسيط</strong>
+                        <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">مُسْتَفْعِلُنْ فَاعِلُنْ مُسْتَفْعِلُنْ فَعِلُنْ</p>
+                    </div>
+                    <div class="meter-item" data-meter="kamel">
+                        <strong style="color: var(--gold-light);">بحر الكامل</strong>
+                        <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">مُتَفَاعِلُنْ مُتَفَاعِلُنْ مُتَفَاعِلُنْ</p>
+                    </div>
+                </div>
+
+                <div class="meter-canvas-card">
+                    <div id="meterVerseTxt" style="font-family: 'Amiri', serif; font-size: 1.6rem; color: var(--gold-light); text-align: center;">
+                        أَلا لَيْتَ رَيْعَانَ الشَّبَابِ يَعُودُ
+                    </div>
+
+                    <div class="syllables-row" id="syllablesRow">
+                        <!-- Populated by JS -->
+                    </div>
+
+                    <button class="play-audio-btn" id="playBeatBtn">
+                        <span>🔊 استمع للإيقاع العروضي بالذكاء الصوتي</span>
+                    </button>
+                    <span style="font-size: 0.8rem; color: var(--text-muted);">يعمل عبر واجهة Web Audio API لتوليد نقرات إيقاعية موسيقية مطابقة لوزن البيت</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. Eras Section -->
+    <div class="section-view" id="tab-eras">
+        <div class="card">
+            <h2 style="font-family: 'Amiri', serif; color: var(--gold); margin-bottom: 8px;">العصور الأدبية وخصائصها الفنية</h2>
+            <div class="eras-grid">
+                <div class="era-card selected" data-era="jahili">
+                    <div class="era-title">العصر الجاهلي</div>
+                    <div class="era-desc">جزالة الألفاظ، تصوير البيئة الصحراوية، والبدء بالوقوف على الأطلال.</div>
+                </div>
+                <div class="era-card" data-era="islami">
+                    <div class="era-title">عصر صدر الإسلام والأموي</div>
+                    <div class="era-desc">تهذيب الألفاظ بتأثير القرآن والحديث، وبروز شعر الفتوحات والنقائض والغزل.</div>
+                </div>
+                <div class="era-card" data-era="abbasi">
+                    <div class="era-title">العصر العباسي</div>
+                    <div class="era-desc">عمق المعاني، رقة الديباجة، ازدهار الحكمة والوصف الفلسفي مع المتنبي وأبي تمام.</div>
+                </div>
+                <div class="era-card" data-era="hadith">
+                    <div class="era-title">العصر الحديث والمعاصر</div>
+                    <div class="era-desc">حركة الإحياء والبعث، شعر التفعيلة، والاهتمام بقضايا الوطن والوجدان الإنساني.</div>
+                </div>
+            </div>
+
+            <div class="era-detail-box" id="eraDetailBox">
+                <!-- Filled dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. Quiz Section -->
+    <div class="section-view" id="tab-quiz">
+        <div class="card">
+            <h2 style="font-family: 'Amiri', serif; color: var(--gold); margin-bottom: 8px;">تحدي التذوق البلاغي السريع</h2>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">اختبر مهاراتك في استخراج الصور البيانية والمحسنات البديعية:</p>
+
+            <div class="quiz-card" id="quizContainer">
+                <div id="quizQuestion" style="font-size: 1.15rem; font-weight: bold; margin-bottom: 15px;"></div>
+                <div id="quizOptions"></div>
+                <div id="quizFeedback" style="margin-top: 15px; font-weight: bold;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tab switching
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        const sections = document.querySelectorAll('.section-view');
+
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                tabBtns.forEach(b => b.classList.remove('active'));
+                sections.forEach(s => s.classList.remove('active'));
+
+                btn.classList.add('active');
+                document.getElementById(btn.dataset.tab).classList.add('active');
+            });
+        });
+
+        // Module 1: Rhetoric Dissection data
+        const rhetoricData = {
+            'r1': {
+                title: 'استعارة مكنية (علم البيان)',
+                text: '<strong>الشرح:</strong> شبّه المنيّة (الموت) بوحش مفترس له أظفار يفتك بفريسته، ثم حذف المشبّه به (الوحش) ورمز إليه بشيء من لوازمه وهو (الأظفار).<br><strong>سر الجمال:</strong> التجسيم وإبراز الموت في صورة وحش ضارٍ لبيان قسوته وأنه لا يدفع بالحيل والتمائم.'
+            },
+            'r2': {
+                title: 'كناية عن عدم الجدوى (علم البيان)',
+                text: '<strong>الشرح:</strong> جملة تدل على انقطاع الأمل عند نزول القدر المحتوم.<br><strong>سر الجمال:</strong> الإتيان بالمعنى مصحوباً بالدليل عليه في إيجاز وتجسيم.'
+            },
+            'r3': {
+                title: 'استعارة مكنية (علم البيان)',
+                text: '<strong>الشرح:</strong> شبّه القلب بإنسان يُسأل ويستجيب.<br><strong>سر الجمال:</strong> التشخيص (إعطاء الجماد أو المعنى صفة الإنسان الحية).'
+            },
+            'r4': {
+                title: 'تشبيه تمثيلي / مجمل (علم البيان)',
+                text: '<strong>الشرح:</strong> شبّه قطرات الدموع المتساقطة بحبات الجمان (اللؤلؤ المنثور).<br><strong>سر الجمال:</strong> التوضيح ورسم صورة بصرية متلألئة تبرز رقة المشهد.'
+            }
+        };
+
+        const rhetoricWords = document.querySelectorAll('.rhetoric-word');
+        const dissectionBox = document.getElementById('dissectionBox');
+        const dissectTitle = document.getElementById('dissectTitle');
+        const dissectBody = document.getElementById('dissectBody');
+
+        rhetoricWords.forEach(w => {
+            w.addEventListener('click', () => {
+                rhetoricWords.forEach(rw => rw.classList.remove('highlighted'));
+                w.classList.add('highlighted');
+                const data = rhetoricData[w.dataset.id];
+                dissectTitle.textContent = data.title;
+                dissectBody.innerHTML = data.text;
+                dissectionBox.classList.add('show');
+            });
+        });
+
+        // Module 2: Meter & Web Audio Synth
+        const meters = {
+            'taweel': {
+                verse: 'طَوِيلٌ لَهُ دُونَ البُحُورِ فَضَائِلُ ... فَعُولُنْ مَفَاعِيلُنْ فَعُولُنْ مَفَاعِلُنْ',
+                syllables: ['فَعُو', 'لُنْ', 'مَفَا', 'عِي', 'لُنْ', 'فَعُو', 'لُنْ', 'مَفَا', 'عِ', 'لُنْ'],
+                durations: [200, 400, 200, 400, 400, 200, 400, 200, 200, 400]
+            },
+            'baseet': {
+                verse: 'إِنَّ البَسِيطَ لَدَيْهِ يُبْسَطُ الأَمَلُ ... مُسْتَفْعِلُنْ فَاعِلُنْ مُسْتَفْعِلُنْ فَعِلُنْ',
+                syllables: ['مُسْ', 'تَفْ', 'عِ', 'لُنْ', 'فَا', 'عِ', 'لُنْ', 'مُسْ', 'تَفْ', 'عِ', 'لُنْ'],
+                durations: [400, 400, 200, 400, 400, 200, 400, 400, 400, 200, 400]
+            },
+            'kamel': {
+                verse: 'كَمُلَ الجَمَالُ مِنَ البُحُورِ الكَامِلُ ... مُتَفَاعِلُنْ مُتَفَاعِلُنْ مُتَفَاعِلُنْ',
+                syllables: ['مُ', 'تَ', 'فَا', 'عِ', 'لُنْ', 'مُ', 'تَ', 'فَا', 'عِ', 'لُنْ'],
+                durations: [200, 200, 400, 200, 400, 200, 200, 400, 200, 400]
+            }
+        };
+
+        const meterItems = document.querySelectorAll('.meter-item');
+        const meterVerseTxt = document.getElementById('meterVerseTxt');
+        const syllablesRow = document.getElementById('syllablesRow');
+        const playBeatBtn = document.getElementById('playBeatBtn');
+
+        let currentMeterKey = 'taweel';
+
+        function renderMeterUI(key) {
+            const m = meters[key];
+            meterVerseTxt.textContent = m.verse;
+            syllablesRow.innerHTML = '';
+            m.syllables.forEach((s, idx) => {
+                const box = document.createElement('div');
+                box.className = 'syllable-box';
+                box.id = `syl-${idx}`;
+                box.textContent = s;
+                syllablesRow.appendChild(box);
+            });
+        }
+
+        meterItems.forEach(item => {
+            item.addEventListener('click', () => {
+                meterItems.forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+                currentMeterKey = item.dataset.meter;
+                renderMeterUI(currentMeterKey);
+            });
+        });
+
+        // Web Audio API Synthesizer for Metric Beats
+        let audioCtx = null;
+        function playTone(freq, duration) {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+            gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + (duration / 1000));
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + (duration / 1000));
+        }
+
+        playBeatBtn.addEventListener('click', () => {
+            const m = meters[currentMeterKey];
+            let elapsed = 0;
+            m.syllables.forEach((s, idx) => {
+                const dur = m.durations[idx];
+                setTimeout(() => {
+                    document.querySelectorAll('.syllable-box').forEach(b => b.classList.remove('beat-active'));
+                    const targetBox = document.getElementById(`syl-${idx}`);
+                    if (targetBox) targetBox.classList.add('beat-active');
+                    playTone(dur > 300 ? 320 : 520, dur);
+                }, elapsed);
+                elapsed += dur + 80;
+            });
+            setTimeout(() => {
+                document.querySelectorAll('.syllable-box').forEach(b => b.classList.remove('beat-active'));
+            }, elapsed);
+        });
+
+        renderMeterUI('taweel');
+
+        // Module 3: Eras Info
+        const erasData = {
+            'jahili': {
+                title: 'روائع العصر الجاهلي (ما قبل الإسلام)',
+                poets: 'امرؤ القيس، عنترة بن شداد، زهير بن أبي سلمى',
+                features: 'وضوح الألفاظ مع جزالتها، الصدق في التعبير عن الحياة البدوية، وحدة البيت الشعري، والبراعة الفائقة في الوصف الحسي.',
+                sample: 'وَلَقَد شَفَى جَسَدِي وَأَبرَأَ سُقمَهُ ... قِيلُ الفَوارِسِ وَيكَ عَنتَرَ أَقدِمِ'
+            },
+            'islami': {
+                title: 'عصر صدر الإسلام والدولة الأموية',
+                poets: 'حسان بن ثابت، كعب بن زهير، جرير، الفرزدق',
+                features: 'التأثر بالمعجم القرآني الكريم، توظيف الشعر في الدعوة والفتوحات، وظهور الغزل العفيف وشعر النقائض الفنية.',
+                sample: 'إِنَّ الرَسُولَ لَنُورٌ يُستَضاءُ بِهِ ... مُهَنَّدٌ مِن سُيُوفِ اللَهِ مَسلُولُ'
+            },
+            'abbasi': {
+                title: 'العصر العباسي: عصر النضج الفكري والازدهار',
+                poets: 'أبو الطيب المتنبي، أبو تمام، البحتري، الشريف الرضي',
+                features: 'التلاقح مع الثقافات الأجنبية، دقة التفكير الفلسفي وتوليد المعاني المبتكرة، شيوع الحكمة وبلاغة التراكيب.',
+                sample: 'عَلى قَدرِ أَهلِ العَزمِ تَأتي العَزائِمُ ... وَتَأتي عَلى قَدرِ الكِرامِ المَكارِمُ'
+            },
+            'hadith': {
+                title: 'العصر الحديث وحركة البعث والتجديد',
+                poets: 'أحمد شوقي، حافظ إبراهيم، بدر شاكر السياب، غازي القصيبي',
+                features: 'إعادة الحياة لعمود الشعر الكلاسيكي (الإحياء)، ثم انبثاق حركة الشعر الحر، والالتصاق بهموم الإنسان المعاصر.',
+                sample: 'وَإِذا النِّساءُ نَشَأنَ فِي أُمِّيَّةٍ ... رَضَعَ الرِجالُ جَهالَةً وَخُمُولا'
+            }
+        };
+
+        const eraCards = document.querySelectorAll('.era-card');
+        const eraDetailBox = document.getElementById('eraDetailBox');
+
+        function showEra(k) {
+            const data = erasData[k];
+            eraDetailBox.innerHTML = `
+                <h3 style="color: var(--gold); font-family: 'Amiri', serif; font-size: 1.5rem;">${data.title}</h3>
+                <div style="margin-top: 10px; line-height: 1.8;">
+                    <strong>أبرز الشعراء:</strong> ${data.poets}<br>
+                    <strong>الخصائص الفنية:</strong> ${data.features}<br>
+                    <div style="background: rgba(0,0,0,0.4); padding: 12px; border-radius: 8px; margin-top: 10px; font-family: 'Amiri', serif; font-size: 1.25rem; color: var(--gold-light);">
+                        نموذج: "${data.sample}"
+                    </div>
+                </div>
+            `;
+        }
+        eraCards.forEach(c => {
+            c.addEventListener('click', () => {
+                eraCards.forEach(card => card.classList.remove('selected'));
+                c.classList.add('selected');
+                showEra(c.dataset.era);
+            });
+        });
+        showEra('jahili');
+
+        // Module 4: Quiz
+        const quizList = [
+            {
+                q: 'ما نوع الصورة البيانية في قول الشاعر: "يَؤُمُّ مَجْدَاً كَأَنَّهُ الشَّمْسُ فِي كَبِدِ السَّمَاءِ"؟',
+                options: ['تشبيه تام الأركان', 'استعارة تصريحية', 'كناية عن موصوف', 'طباق إيجاب'],
+                correct: 0,
+                explain: 'تشبيه تام: لاشتماله على المشبه (المجد)، المشبه به (الشمس)، أداة التشبيه (كأن)، ووجه الشبه (الرفعة والظهور).'
+            },
+            {
+                q: 'في قوله تعالى: "يَخْرُجُ مِنْهُمَا اللُّؤْلُؤُ وَالْمَرْجَانُ"، وفي موضع آخر استعيرت كلمة "اللؤلؤ" لتدل على كلام الحكماء، فما نوع هذه الاستعارة؟',
+                options: ['استعارة مكنية', 'استعارة تصريحية', 'جناس ناقص', 'مقابلة'],
+                correct: 1,
+                explain: 'استعارة تصريحية: لأنه صُرّح فيها بلفظ المشبه به وحُذف المشبه.'
+            }
+        ];
+
+        let curQ = 0;
+        const quizQuestion = document.getElementById('quizQuestion');
+        const quizOptions = document.getElementById('quizOptions');
+        const quizFeedback = document.getElementById('quizFeedback');
+
+        function loadQuestion(idx) {
+            const item = quizList[idx];
+            quizQuestion.textContent = `${idx + 1}. ${item.q}`;
+            quizOptions.innerHTML = '';
+            quizFeedback.textContent = '';
+
+            item.options.forEach((opt, oIdx) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.textContent = opt;
+                btn.addEventListener('click', () => {
+                    const allBtns = quizOptions.querySelectorAll('.option-btn');
+                    allBtns.forEach(b => b.disabled = true);
+                    if (oIdx === item.correct) {
+                        btn.classList.add('correct');
+                        quizFeedback.style.color = '#52b788';
+                        quizFeedback.textContent = `✅ أحسنت! إجابة صحيحة. ${item.explain}`;
+                    } else {
+                        btn.classList.add('wrong');
+                        allBtns[item.correct].classList.add('correct');
+                        quizFeedback.style.color = '#ff6b6b';
+                        quizFeedback.textContent = `❌ إجابة غير دقيقة. ${item.explain}`;
+                    }
+                });
+                quizOptions.appendChild(btn);
+            });
+        }
+        loadQuestion(0);
+    </script>
+</body>
+</html>

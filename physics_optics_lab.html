@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>مختبر البصريات ومسار الأشعة | فيزياء 3</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0b132b;
+            --card-bg: rgba(28, 37, 65, 0.75);
+            --border-color: rgba(91, 192, 190, 0.25);
+            --primary: #6fffe9;
+            --secondary: #5bc0be;
+            --accent: #ff6b6b;
+            --accent-yellow: #ffd166;
+            --text-main: #f0f4f8;
+            --text-muted: #9bb1c9;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Tajawal', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        header {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+
+        .header-title h1 {
+            font-size: 1.8rem;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header-title p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-top: 5px;
+        }
+
+        .badge {
+            background: rgba(111, 255, 233, 0.1);
+            color: var(--primary);
+            border: 1px solid var(--primary);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+
+        .main-container {
+            display: grid;
+            grid-template-columns: 340px 1fr;
+            gap: 20px;
+            flex: 1;
+        }
+
+        @media (max-width: 992px) {
+            .main-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .controls-panel {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            backdrop-filter: blur(12px);
+        }
+
+        .panel-section-title {
+            font-size: 1.1rem;
+            color: var(--primary);
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 8px;
+            margin-bottom: 5px;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        label {
+            font-size: 0.9rem;
+            color: var(--text-main);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .value-display {
+            color: var(--accent-yellow);
+            font-weight: bold;
+        }
+
+        select, input[type="range"], button {
+            width: 100%;
+            border-radius: 8px;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            background: #1c2541;
+            color: var(--text-main);
+            font-size: 0.95rem;
+            outline: none;
+            transition: 0.2s;
+        }
+
+        select:focus, input[type="range"]:focus {
+            border-color: var(--primary);
+        }
+
+        input[type="range"] {
+            padding: 0;
+            height: 8px;
+            cursor: pointer;
+            accent-color: var(--primary);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, var(--secondary), var(--primary));
+            color: #0b132b;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px;
+            box-shadow: 0 4px 15px rgba(91, 192, 190, 0.4);
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        .canvas-area {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .canvas-card {
+            background: #060b19;
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: inset 0 0 50px rgba(0,0,0,0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: auto; aspect-ratio: 16/9;
+            cursor: crosshair;
+        }
+
+        @media (max-width: 650px) {
+            .legend-bar { position: static; margin-bottom: 8px; justify-content: center; font-size: 0.72rem; }
+            header { flex-direction: column; text-align: center; }
+        }
+        .legend-bar {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(11, 19, 43, 0.85);
+            padding: 10px 16px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            font-size: 0.8rem;
+            display: flex;
+            gap: 15px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .legend-dot {
+            width: 12px;
+            height: 3px;
+            border-radius: 2px;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .result-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .result-card .title {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 5px;
+        }
+
+        .result-card .value {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .badge-list {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            margin-top: 6px;
+            flex-wrap: wrap;
+        }
+
+        .status-tag {
+            background: rgba(255, 209, 102, 0.15);
+            color: var(--accent-yellow);
+            border: 1px solid var(--accent-yellow);
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .status-tag.real {
+            background: rgba(111, 255, 233, 0.15);
+            color: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .status-tag.virtual {
+            background: rgba(255, 107, 107, 0.15);
+            color: var(--accent);
+            border-color: var(--accent);
+        }
+
+        .steps-box {
+            background: rgba(11, 19, 43, 0.6);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 15px;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+        .steps-box code {
+            color: var(--accent-yellow);
+            font-weight: bold;
+            direction: ltr;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-title">
+            <h1>🔬 مختبر البصريات ومسار الأشعة التفاعلي</h1>
+            <p>محاكاة دقيقة لحالات تكون الصور في المرايا الكروية والعدسات - مقرر فيزياء 3</p>
+        </div>
+        <span class="badge">المملكة العربية السعودية | ثالث ثانوي</span>
+    </header>
+
+    <div class="main-container">
+        <!-- Controls Sidebar -->
+        <div class="controls-panel">
+            <h2 class="panel-section-title">⚙️ إعدادات العنصر البصري</h2>
+            
+            <div class="control-group">
+                <label for="opticalType">نوع الأداة البصرية:</label>
+                <select id="opticalType">
+                    <option value="concave_mirror">مرآة مقعرة (Concave Mirror)</option>
+                    <option value="convex_mirror">مرآة محدبة (Convex Mirror)</option>
+                    <option value="convex_lens">عدسة محدبة (Convex Lens)</option>
+                    <option value="concave_lens">عدسة مقعرة (Concave Lens)</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label>البعد البؤري (|f|): <span id="fVal" class="value-display">120 cm</span></label>
+                <input type="range" id="fSlider" min="50" max="200" value="120">
+            </div>
+
+            <div class="control-group">
+                <label>بُعد الجسم عن القطعة (do): <span id="doVal" class="value-display">240 cm</span></label>
+                <input type="range" id="doSlider" min="20" max="450" value="240">
+            </div>
+
+            <div class="control-group">
+                <label>طول الجسم (ho): <span id="hoVal" class="value-display">80 cm</span></label>
+                <input type="range" id="hoSlider" min="30" max="140" value="80">
+            </div>
+
+            <h2 class="panel-section-title">🎯 حالات جاهزة للمعاينة</h2>
+            <div class="control-group">
+                <select id="presetSelect">
+                    <option value="custom">-- اختر حالة دراسية من المنهج --</option>
+                    <option value="p1">1. الجسم على بعد أكبر من ضعف البعد البؤري (do > 2f)</option>
+                    <option value="p2">2. الجسم في مركز التكور تماماً (do = 2f)</option>
+                    <option value="p3">3. الجسم بين البؤرة ومركز التكور (f < do < 2f)</option>
+                    <option value="p4">4. الجسم في البؤرة تماماً (do = f - لا تتكون صورة)</option>
+                    <option value="p5">5. الجسم بين البؤرة والمرآة/العدسة (do < f - صورة مكبرة خيالية)</option>
+                </select>
+            </div>
+
+            <button class="btn" id="downloadBtn">📸 حفظ لقطة للتجربة (PNG)</button>
+        </div>
+
+        <!-- Canvas and Analysis -->
+        <div class="canvas-area">
+            <div class="canvas-card">
+                <canvas id="opticsCanvas" width="900" height="480"></canvas>
+                <div class="legend-bar">
+                    <div class="legend-item"><div class="legend-dot" style="background: #ffd166;"></div> شعاع 1 (موازٍ ثم يمر بالبؤرة)</div>
+                    <div class="legend-item"><div class="legend-dot" style="background: #ff6b6b;"></div> شعاع 2 (يمر بالبؤرة ثم ينعكس موازياً)</div>
+                    <div class="legend-item"><div class="legend-dot" style="background: #a06cd5;"></div> شعاع 3 (يمر بالمركز)</div>
+                </div>
+            </div>
+
+            <!-- Mathematical and Nature Results -->
+            <div class="results-grid">
+                <div class="result-card">
+                    <div class="title">بُعد الصورة (di)</div>
+                    <div class="value" id="resDi">-</div>
+                </div>
+                <div class="result-card">
+                    <div class="title">معامل التكبير (m)</div>
+                    <div class="value" id="resM">-</div>
+                </div>
+                <div class="result-card">
+                    <div class="title">طول الصورة (hi)</div>
+                    <div class="value" id="resHi">-</div>
+                </div>
+                <div class="result-card">
+                    <div class="title">صفات الصورة الناتجة</div>
+                    <div class="badge-list" id="badgesList">
+                        <!-- Badges dynamically added -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step-by-step Math Breakdown -->
+            <div class="steps-box" id="mathBreakdown">
+                <!-- Dynamically generated equation breakdown -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('opticsCanvas');
+        const ctx = canvas.getContext('2d');
+
+        const opticalType = document.getElementById('opticalType');
+        const fSlider = document.getElementById('fSlider');
+        const doSlider = document.getElementById('doSlider');
+        const hoSlider = document.getElementById('hoSlider');
+        const fVal = document.getElementById('fVal');
+        const doVal = document.getElementById('doVal');
+        const hoVal = document.getElementById('hoVal');
+        const presetSelect = document.getElementById('presetSelect');
+
+        const resDi = document.getElementById('resDi');
+        const resM = document.getElementById('resM');
+        const resHi = document.getElementById('resHi');
+        const badgesList = document.getElementById('badgesList');
+        const mathBreakdown = document.getElementById('mathBreakdown');
+        const downloadBtn = document.getElementById('downloadBtn');
+
+        function update() {
+            const type = opticalType.value;
+            let f = parseFloat(fSlider.value);
+            const do_val = parseFloat(doSlider.value);
+            const ho = parseFloat(hoSlider.value);
+
+            fVal.textContent = `${f} cm`;
+            doVal.textContent = `${do_val} cm`;
+            hoVal.textContent = `${ho} cm`;
+
+            // Sign conventions:
+            // Concave mirror: f > 0
+            // Convex mirror: f < 0
+            // Convex lens: f > 0
+            // Concave lens: f < 0
+            let signed_f = f;
+            if (type === 'convex_mirror' || type === 'concave_lens') {
+                signed_f = -f;
+            }
+
+            // Calculation
+            let di, m, hi;
+            let infinite = false;
+
+            if (Math.abs(do_val - signed_f) < 0.001) {
+                infinite = true;
+                di = Infinity;
+                m = Infinity;
+                hi = Infinity;
+            } else {
+                di = (signed_f * do_val) / (do_val - signed_f);
+                m = -di / do_val;
+                hi = m * ho;
+            }
+
+            renderCanvas(type, f, signed_f, do_val, ho, di, m, hi, infinite);
+            renderResults(type, signed_f, do_val, ho, di, m, hi, infinite);
+        }
+
+        function renderCanvas(type, abs_f, f, do_val, ho, di, m, hi, infinite) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const originX = canvas.width / 2;
+            const originY = canvas.height / 2;
+
+            // Optical Axis
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+            ctx.lineWidth = 1.5;
+            ctx.setLineDash([6, 6]);
+            ctx.beginPath();
+            ctx.moveTo(0, originY);
+            ctx.lineTo(canvas.width, originY);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            // Draw Lens / Mirror
+            ctx.lineWidth = 3;
+            if (type.includes('mirror')) {
+                // Center mirror at originX
+                ctx.strokeStyle = '#6fffe9';
+                ctx.beginPath();
+                if (type === 'concave_mirror') {
+                    ctx.arc(originX + 160, originY, 180, Math.PI - 0.7, Math.PI + 0.7);
+                } else {
+                    ctx.arc(originX - 160, originY, 180, -0.7, 0.7);
+                }
+                ctx.stroke();
+
+                // Hatching
+                ctx.strokeStyle = 'rgba(111, 255, 233, 0.3)';
+                for (let y = originY - 100; y <= originY + 100; y += 12) {
+                    ctx.beginPath();
+                    ctx.moveTo(originX + (type === 'concave_mirror' ? 10 : -10), y);
+                    ctx.lineTo(originX + (type === 'concave_mirror' ? 22 : -2), y - 6);
+                    ctx.stroke();
+                }
+            } else {
+                // Lens
+                ctx.strokeStyle = '#6fffe9';
+                ctx.fillStyle = 'rgba(111, 255, 233, 0.08)';
+                ctx.beginPath();
+                if (type === 'convex_lens') {
+                    ctx.ellipse(originX, originY, 14, 130, 0, 0, Math.PI * 2);
+                } else {
+                    ctx.rect(originX - 8, originY - 130, 16, 260);
+                }
+                ctx.fill();
+                ctx.stroke();
+            }
+
+            // Focal Points and 2F Markers
+            const scale = 1.0;
+            const focalX1 = originX - (f * scale);
+            const focalX2 = originX + (f * scale);
+            const twoF1 = originX - (2 * f * scale);
+            const twoF2 = originX + (2 * f * scale);
+
+            function drawPoint(x, label) {
+                ctx.fillStyle = '#6fffe9';
+                ctx.beginPath();
+                ctx.arc(x, originY, 4, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillStyle = '#9bb1c9';
+                ctx.font = '12px Tajawal';
+                ctx.textAlign = 'center';
+                ctx.fillText(label, x, originY + 20);
+            }
+
+            if (type.includes('mirror')) {
+                drawPoint(originX - abs_f, 'F');
+                drawPoint(originX - 2 * abs_f, 'C');
+            } else {
+                drawPoint(originX - abs_f, 'F');
+                drawPoint(originX + abs_f, "F'");
+                drawPoint(originX - 2 * abs_f, '2F');
+                drawPoint(originX + 2 * abs_f, "2F'");
+            }
+
+            // Draw Object (Arrow)
+            const objX = originX - do_val;
+            const objY = originY - ho;
+            drawArrow(objX, originY, objX, objY, '#00f5d4', 'الجسم (Object)');
+
+            if (infinite) {
+                // Parallel reflected/refracted rays
+                ctx.fillStyle = '#ff6b6b';
+                ctx.font = '16px Tajawal';
+                ctx.textAlign = 'center';
+                ctx.fillText('تتلاقى الأشعة في المالانهاية (لا تتكون صورة)', originX, originY - 150);
+                return;
+            }
+
+            // Draw Image (Arrow)
+            let imgX;
+            if (type.includes('mirror')) {
+                imgX = originX - di;
+            } else {
+                imgX = originX + di;
+            }
+            const imgY = originY - hi;
+            const imgColor = di > 0 ? '#52b788' : '#ff758f';
+            drawArrow(imgX, originY, imgX, imgY, imgColor, di > 0 ? 'صورة حقيقية' : 'صورة خيالية', di < 0);
+
+            // Ray 1: Parallel to axis, then reflects/refracts through focus
+            ctx.lineWidth = 1.8;
+            ctx.strokeStyle = '#ffd166';
+            ctx.beginPath();
+            ctx.moveTo(objX, objY);
+            ctx.lineTo(originX, objY);
+            if (type === 'concave_mirror') {
+                ctx.lineTo(imgX, imgY);
+                ctx.lineTo(originX - abs_f * 2, originY - (objY - originY));
+            } else if (type === 'convex_lens') {
+                ctx.lineTo(originX + abs_f, originY);
+                ctx.lineTo(imgX, imgY);
+            } else if (type === 'convex_mirror') {
+                ctx.lineTo(originX - 200, objY - 100);
+            } else if (type === 'concave_lens') {
+                ctx.lineTo(originX + 250, objY - 120);
+            }
+            ctx.stroke();
+
+            // Ray 2: Directed towards center / vertex
+            ctx.strokeStyle = '#a06cd5';
+            ctx.beginPath();
+            ctx.moveTo(objX, objY);
+            ctx.lineTo(originX, originY);
+            if (type.includes('lens')) {
+                ctx.lineTo(imgX, imgY);
+            } else {
+                ctx.lineTo(imgX, imgY);
+            }
+            ctx.stroke();
+
+            // Dashed extensions for virtual images
+            if (di < 0) {
+                ctx.setLineDash([4, 4]);
+                ctx.strokeStyle = 'rgba(255, 117, 143, 0.7)';
+                ctx.beginPath();
+                ctx.moveTo(originX, objY);
+                ctx.lineTo(imgX, imgY);
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(originX, originY);
+                ctx.lineTo(imgX, imgY);
+                ctx.stroke();
+                ctx.setLineDash([]);
+            }
+        }
+
+        function drawArrow(fromX, fromY, toX, toY, color, label, isDashed = false) {
+            ctx.save();
+            ctx.strokeStyle = color;
+            ctx.fillStyle = color;
+            ctx.lineWidth = 3.5;
+            if (isDashed) ctx.setLineDash([5, 5]);
+
+            ctx.beginPath();
+            ctx.moveTo(fromX, fromY);
+            ctx.lineTo(toX, toY);
+            ctx.stroke();
+
+            // Arrow head
+            const headlen = 10;
+            const angle = Math.atan2(toY - fromY, toX - fromX);
+            ctx.setLineDash([]);
+            ctx.beginPath();
+            ctx.moveTo(toX, toY);
+            ctx.lineTo(toX - headlen * Math.cos(angle - Math.PI / 6), toY - headlen * Math.sin(angle - Math.PI / 6));
+            ctx.lineTo(toX - headlen * Math.cos(angle + Math.PI / 6), toY - headlen * Math.sin(angle + Math.PI / 6));
+            ctx.fill();
+
+            // Text Label
+            ctx.font = 'bold 12px Tajawal';
+            ctx.textAlign = 'center';
+            ctx.fillText(label, toX, toY + (toY < fromY ? -12 : 20));
+            ctx.restore();
+        }
+
+        function renderResults(type, f, do_val, ho, di, m, hi, infinite) {
+            badgesList.innerHTML = '';
+
+            if (infinite) {
+                resDi.textContent = '∞ (مالانهاية)';
+                resM.textContent = 'غير معرف';
+                resHi.textContent = 'لا تتكون صورة';
+                badgesList.innerHTML = '<span class="status-tag virtual">لا توجد صورة متكونة</span>';
+                mathBreakdown.innerHTML = '<strong>حالة خاصة (do = f):</strong> عندما يوضع الجسم في البؤرة تماماً، تنعكس/تنكسر الأشعة متوازية ولا تلتقي أبداً، فلا تتشكل صورة.';
+                return;
+            }
+
+            resDi.textContent = `${di.toFixed(1)} cm`;
+            resM.textContent = `${Math.abs(m).toFixed(2)}x`;
+            resHi.textContent = `${Math.abs(hi).toFixed(1)} cm`;
+
+            // Determine image characteristics
+            const isReal = di > 0;
+            const isInverted = m < 0;
+            let sizeText = 'مساوية للجسم';
+            if (Math.abs(m) > 1.05) sizeText = 'مكبرة';
+            else if (Math.abs(m) < 0.95) sizeText = 'مصغرة';
+
+            badgesList.innerHTML = `
+                <span class="status-tag ${isReal ? 'real' : 'virtual'}">${isReal ? 'حقيقية (Real)' : 'خيالية / تقديرية (Virtual)'}</span>
+                <span class="status-tag">${isInverted ? 'مقلوبة (Inverted)' : 'معتدلة (Upright)'}</span>
+                <span class="status-tag">${sizeText}</span>
+            `;
+
+            mathBreakdown.innerHTML = `
+                <strong>الخطوات الحسابية (المعادلة العامة للمرايا والعدسات):</strong><br>
+                1. قانون بعد الصورة: <code>1/di = 1/f - 1/do</code> = <code>1/${f} - 1/${do_val}</code> ➜ <strong>di = ${di.toFixed(2)} cm</strong><br>
+                2. قانون التكبير: <code>m = -di / do</code> = <code>-(${di.toFixed(1)}) / ${do_val}</code> ➜ <strong>m = ${m.toFixed(2)}</strong><br>
+                3. طول الصورة: <code>hi = m × ho</code> = <code>${m.toFixed(2)} × ${ho}</code> ➜ <strong>hi = ${hi.toFixed(2)} cm</strong>
+            `;
+        }
+
+        presetSelect.addEventListener('change', (e) => {
+            const p = e.target.value;
+            const f = parseFloat(fSlider.value);
+            if (p === 'p1') doSlider.value = f * 2.5;
+            else if (p === 'p2') doSlider.value = f * 2;
+            else if (p === 'p3') doSlider.value = f * 1.5;
+            else if (p === 'p4') doSlider.value = f;
+            else if (p === 'p5') doSlider.value = f * 0.6;
+            update();
+        });
+
+        opticalType.addEventListener('change', update);
+        fSlider.addEventListener('input', update);
+        doSlider.addEventListener('input', update);
+        hoSlider.addEventListener('input', update);
+
+        downloadBtn.addEventListener('click', () => {
+            const link = document.createElement('a');
+            link.download = 'تجربة_البصريات_فيزياء_3.png';
+            link.href = canvas.toDataURL();
+            link.click();
+        });
+
+        
+        // Touch & Drag support on canvas for mobile
+        let isDragging = false;
+        function getCanvasPos(e) {
+            const rect = canvas.getBoundingClientRect();
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            return {
+                x: (clientX - rect.left) * (canvas.width / rect.width),
+                y: (clientY - rect.top) * (canvas.height / rect.height)
+            };
+        }
+
+        canvas.addEventListener('pointerdown', (e) => {
+            const pos = getCanvasPos(e);
+            const originX = canvas.width / 2;
+            const objX = originX - parseFloat(doSlider.value);
+            if (Math.abs(pos.x - objX) < 40) {
+                isDragging = true;
+                canvas.setPointerCapture(e.pointerId);
+            }
+        });
+
+        canvas.addEventListener('pointermove', (e) => {
+            if (!isDragging) return;
+            const pos = getCanvasPos(e);
+            const originX = canvas.width / 2;
+            const newDo = Math.min(450, Math.max(20, originX - pos.x));
+            doSlider.value = newDo;
+            update();
+        });
+
+        canvas.addEventListener('pointerup', () => isDragging = false);
+        canvas.addEventListener('pointercancel', () => isDragging = false);
+
+        update();
+    </script>
+</body>
+</html>

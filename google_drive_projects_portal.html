@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>بوابة مشاريع ثالث ثانوي الرقمية | مسار علوم الحاسب والهندسة</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #070d18;
+            --panel: rgba(18, 26, 44, 0.9);
+            --border: rgba(99, 102, 241, 0.25);
+            --primary: #38bdf8;
+            --accent: #a855f7;
+            --success: #10b981;
+            --drive: #4285f4;
+            --text: #f8fafc;
+            --muted: #94a3b8;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Tajawal', sans-serif; }
+        body {
+            background-color: var(--bg);
+            background-image: radial-gradient(circle at 50% 0%, rgba(56, 189, 248, 0.12) 0%, transparent 60%);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .header-card {
+            max-width: 1100px;
+            width: 100%;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 24px;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+            backdrop-filter: blur(12px);
+        }
+
+        h1 { font-size: 1.8rem; color: #fff; margin-bottom: 8px; }
+        h1 span { color: var(--primary); }
+        p.subtitle { color: var(--muted); font-size: 0.95rem; line-height: 1.6; }
+
+        .track-badge {
+            display: inline-block;
+            background: rgba(168, 85, 247, 0.15);
+            color: var(--accent);
+            border: 1px solid var(--accent);
+            padding: 4px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            margin-top: 8px;
+        }
+
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+            max-width: 1100px;
+            width: 100%;
+        }
+
+        .project-card {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 14px;
+            transition: all 0.25s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .project-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--primary);
+            box-shadow: 0 10px 30px rgba(56, 189, 248, 0.15);
+        }
+
+        .card-top { display: flex; align-items: center; gap: 12px; }
+        .subject-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: rgba(56, 189, 248, 0.12);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .subject-info h3 { font-size: 1.1rem; color: #fff; }
+        .subject-info span { font-size: 0.8rem; color: var(--primary); font-weight: bold; }
+
+        p.card-desc { font-size: 0.88rem; color: var(--muted); line-height: 1.55; flex: 1; }
+
+        .card-actions { display: flex; gap: 8px; }
+        .btn {
+            flex: 1;
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 0.85rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: 0.2s;
+        }
+
+        .btn-launch { background: linear-gradient(135deg, var(--primary), #0284c7); color: #070d18; }
+        .btn-drive { background: rgba(66, 133, 244, 0.15); color: #93c5fd; border: 1px solid rgba(66, 133, 244, 0.35); }
+        .btn:hover { opacity: 0.9; }
+    </style>
+</head>
+<body>
+
+    <div class="header-card">
+        <h1>🌟 بوابة المشاريع الرقمية التفاعلية | <span>ثالث ثانوي مسارات</span></h1>
+        <div class="track-badge">✨ مخصص لمسار علوم الحاسب والهندسة + المواد المشتركة ✨</div>
+        <p class="subtitle" style="margin-top: 10px;">
+            كافة المشاريع مجهزة بتصميم متجاوب بالكامل مع الهواتف الذكية والحواسب (Mobile & Touch Friendly)،<br>
+            ومربوطة مباشرة بـ <strong>Google Drive</strong> لتسهيل مشاركتها مع المعلمين.
+        </p>
+    </div>
+
+    <div class="projects-grid">
+        <!-- 1. AI -->
+        <div class="project-card">
+            <div class="card-top">
+                <div class="subject-icon">🧠</div>
+                <div class="subject-info">
+                    <h3>مختبر الذكاء الاصطناعي</h3>
+                    <span>مسار علوم الحاسب والهندسة</span>
+                </div>
+            </div>
+            <p class="card-desc">تدريب نموذج الشبكات العصبية تفاعلياً باللمس، ورسم حدود القرار (Decision Boundary)، مع قياس الدقة والـ Loss في كل دورة.</p>
+            <div class="card-actions">
+                <a href="ai_neural_network_lab.html" class="btn btn-launch">🚀 تشغيل التطبيق</a>
+                <a href="https://docs.google.com/document/d/16EXhNmfg-chysmrNeaLBZR10qHdZHxRdixwh4gJEEdc/edit" target="_blank" class="btn btn-drive">📁 فتح في Drive</a>
+            </div>
+        </div>
+
+        <!-- 2. Cybersecurity -->
+        <div class="project-card">
+            <div class="card-top">
+                <div class="subject-icon">🛡️</div>
+                <div class="subject-info">
+                    <h3>معمل الأمن السيبراني</h3>
+                    <span>مسار علوم الحاسب والهندسة</span>
+                </div>
+            </div>
+            <p class="card-desc">تشفير قيصر وتجزئة SHA-256، محاكاة ثغرة حقن أوامر SQL وهجمات القوة الغاشمة (Brute Force)، مع آليات الدفاع البرمجي.</p>
+            <div class="card-actions">
+                <a href="cybersecurity_crypto_lab.html" class="btn btn-launch">🚀 تشغيل التطبيق</a>
+                <a href="https://docs.google.com/document/d/1rmvWBMT5flyAG80JRF8Ta7ddvR5TMnoiTPi8YrCLU4Y/edit" target="_blank" class="btn btn-drive">📁 فتح في Drive</a>
+            </div>
+        </div>
+
+        <!-- 3. Software Engineering -->
+        <div class="project-card">
+            <div class="card-top">
+                <div class="subject-icon">💻</div>
+                <div class="subject-info">
+                    <h3>هندسة البرمجيات والتصميم</h3>
+                    <span>مسار علوم الحاسب والهندسة</span>
+                </div>
+            </div>
+            <p class="card-desc">لوحة سبرنت تفاعلية لإدارة المشاريع (Agile Scrum/Kanban)، ومحاكي البوابات المنطقية والدوائر الرقمية وجداول الصواب.</p>
+            <div class="card-actions">
+                <a href="software_engineering_lab.html" class="btn btn-launch">🚀 تشغيل التطبيق</a>
+                <a href="https://docs.google.com/document/d/12tsfYfw8dkq3ZcjFKCl7gpX87-3s1Oj6ef7aNl1neTg/edit" target="_blank" class="btn btn-drive">📁 فتح في Drive</a>
+            </div>
+        </div>
+
+        <!-- 4. Physics -->
+        <div class="project-card">
+            <div class="card-top">
+                <div class="subject-icon">🔬</div>
+                <div class="subject-info">
+                    <h3>مختبر البصريات ومسار الأشعة</h3>
+                    <span>مقرر فيزياء 3</span>
+                </div>
+            </div>
+            <p class="card-desc">محاكاة مسار الأشعة الضوئية في المرايا والعدسات مع رسم الأشعة الثلاث وحساب بعد الصورة والتكبير رياضياً.</p>
+            <div class="card-actions">
+                <a href="physics_optics_lab.html" class="btn btn-launch">🚀 تشغيل التطبيق</a>
+                <a href="https://docs.google.com/document/d/1aaGzeBiMuCKnjnK6BAoqxHP6_FGyB417cKkhVk4BzUI/edit" target="_blank" class="btn btn-drive">📁 فتح في Drive</a>
+            </div>
+        </div>
+
+        <!-- 5. Chemistry -->
+        <div class="project-card">
+            <div class="card-top">
+                <div class="subject-icon">🧪</div>
+                <div class="subject-info">
+                    <h3>معمل المعايرة والـ pH</h3>
+                    <span>مقرر كيمياء 3</span>
+                </div>
+            </div>
+            <p class="card-desc">محاكاة مخبرية تفاعلية للسحاحة وتغير ألوان الكواشف مع رسم بياني حي لمنحنى المعايرة وتحديد نقطة التكافؤ.</p>
+            <div class="card-actions">
+                <a href="chemistry_titration_lab.html" class="btn btn-launch">🚀 تشغيل التطبيق</a>
+                <a href="https://docs.google.com/document/d/1VQmgHzNGfDP3MMoMMI5zO7bKWhtgeAjTDVSnc8NXLI8/edit" target="_blank" class="btn btn-drive">📁 فتح في Drive</a>
+            </div>
+        </div>
+
+        <!-- 6. Math -->
+        <div class="project-card">
+            <div class="card-top">
+                <div class="subject-icon">📐</div>
+                <div class="subject-info">
+                    <h3>مستكشف الدوال الرئيسة</h3>
+                    <span>مقرر رياضيات 3</span>
+                </div>
+            </div>
+            <p class="card-desc">رسم بياني تفاعلي لتحويلات الدوال الأم الخمس وحساب المجال والمدى ومقطع y والتماثل مع دعم اللمس الكامل.</p>
+            <div class="card-actions">
+                <a href="math_functions_lab.html" class="btn btn-launch">🚀 تشغيل التطبيق</a>
+                <a href="https://docs.google.com/document/d/1BmTvdSagQWuBapcoRV28J5GpfY5uva6SoJA3NXT6q3U/edit" target="_blank" class="btn btn-drive">📁 فتح في Drive</a>
+            </div>
+        </div>
+
+        <!-- 7. English -->
+        <div class="project-card">
+            <div class="card-top">
+                <div class="subject-icon">⚡</div>
+                <div class="subject-info">
+                    <h3>Context Quest Simulator</h3>
+                    <span>مقرر Mega Goal 3</span>
+                </div>
+            </div>
+            <p class="card-desc">لعبة سيناريوهات ومغامرة لغوية لاختبار القواعد والمفردات مع ميزة النطق الصوتي المباشر وتقرير تقييم للمعلم.</p>
+            <div class="card-actions">
+                <a href="english_context_quest.html" class="btn btn-launch">🚀 تشغيل التطبيق</a>
+                <a href="https://docs.google.com/document/d/1namtw514OUaUyp6a_BrU_Nld4d5cuNyScu3G_LOMqT8/edit" target="_blank" class="btn btn-drive">📁 فتح في Drive</a>
+            </div>
+        </div>
+
+        <!-- 8. Earth & Space -->
+        <div class="project-card">
+            <div class="card-top">
+                <div class="subject-icon">🪐</div>
+                <div class="subject-info">
+                    <h3>محاكي الفضاء والصفائح</h3>
+                    <span>علوم الأرض والفضاء</span>
+                </div>
+            </div>
+            <p class="card-desc">محاكاة لمدارات كبلر ومساحات الأزمنة المتساوية، مع محرك متحرك لتصادم الصفائح التكتونية والزلازل والبراكين.</p>
+            <div class="card-actions">
+                <a href="earth_space_simulator.html" class="btn btn-launch">🚀 تشغيل التطبيق</a>
+                <a href="https://docs.google.com/document/d/1rgDGIt430fsBrlUHZJNnah0lIqaGBMAgFxkb4WgJ2zE/edit" target="_blank" class="btn btn-drive">📁 فتح في Drive</a>
+            </div>
+        </div>
+
+        <!-- 9. Arabic -->
+        <div class="project-card">
+            <div class="card-top">
+                <div class="subject-icon">📜</div>
+                <div class="subject-info">
+                    <h3>المحراب الأدبي والبلاغي</h3>
+                    <span>مقرر لغة عربية 3</span>
+                </div>
+            </div>
+            <p class="card-desc">تفكيك الصور البيانية، استكشاف العصور الأدبية، ونقرات إيقاعية صوتية للأوزان الشعرية عبر Web Audio API.</p>
+            <div class="card-actions">
+                <a href="arabic_literature_rhetoric.html" class="btn btn-launch">🚀 تشغيل التطبيق</a>
+                <a href="https://docs.google.com/document/d/1fnJ9gDStGerhF-Bxn_u1t-luqMN4lb5kXdK_GWxGr-w/edit" target="_blank" class="btn btn-drive">📁 فتح في Drive</a>
+            </div>
+        </div>
+
+        <!-- 10. Admin Matrix -->
+        <div class="project-card">
+            <div class="card-top">
+                <div class="subject-icon">📊</div>
+                <div class="subject-info">
+                    <h3>مصفوفة اتخاذ القرارات (محدثة)</h3>
+                    <span>مقرر مهارات إدارية 3</span>
+                </div>
+            </div>
+            <p class="card-desc">مصفوفة مفاضلة معيارية مع أزرار فعالة لإضافة وحذف المعايير والبدائل ديناميكياً، ومخطط زمني وتقرير جاهز للطباعة.</p>
+            <div class="card-actions">
+                <a href="smart_decision_matrix.html" class="btn btn-launch">🚀 تشغيل التطبيق</a>
+                <a href="https://docs.google.com/document/d/1A4RQQGAwYFJO6_Q2OKXqeWXiS3FXOYhJqI-OalL_dJA/edit" target="_blank" class="btn btn-drive">📁 فتح في Drive</a>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
