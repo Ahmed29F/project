@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>المختبر الرقمي للبحث العلمي وتوثيق المراجع | البحث ومصادر المعلومات</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=Fira+Code:wght@500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #090e17;
+            --panel: rgba(18, 28, 48, 0.9);
+            --border: rgba(56, 189, 248, 0.25);
+            --primary: #38bdf8;
+            --primary-glow: rgba(56, 189, 248, 0.35);
+            --accent: #818cf8;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --text: #f8fafc;
+            --muted: #94a3b8;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Tajawal', sans-serif; }
+        html { -webkit-text-size-adjust: 100%; }
+        body {
+            background-color: var(--bg);
+            background-image: radial-gradient(circle at 50% 0%, rgba(56, 189, 248, 0.12) 0%, transparent 60%);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        header {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 16px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            backdrop-filter: blur(10px);
+        }
+
+        .header-title h1 { font-size: 1.4rem; color: #fff; display: flex; align-items: center; gap: 8px; }
+        .header-title span.glow { color: var(--primary); text-shadow: 0 0 12px var(--primary-glow); }
+        .header-title p { color: var(--muted); font-size: 0.85rem; margin-top: 3px; }
+
+        .badge {
+            background: rgba(56, 189, 248, 0.15);
+            color: var(--primary);
+            border: 1px solid var(--primary);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .tab-bar {
+            display: flex;
+            gap: 8px;
+            background: var(--panel);
+            padding: 6px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            color: var(--muted);
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s;
+            white-space: nowrap;
+            touch-action: manipulation;
+        }
+        .tab-btn.active {
+            background: var(--primary);
+            color: #090e17;
+            font-weight: 800;
+        }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.25s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+        .card {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            backdrop-filter: blur(10px);
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            color: var(--primary);
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 6px;
+            font-weight: bold;
+        }
+
+        input[type="text"], input[type="number"], select, textarea {
+            width: 100%;
+            border-radius: 8px;
+            padding: 10px 14px;
+            border: 1px solid var(--border);
+            background: #090e17;
+            color: var(--text);
+            font-size: 1rem; /* 16px to prevent iOS auto-zoom */
+            outline: none;
+            transition: 0.2s;
+        }
+        input:focus, select:focus, textarea:focus { border-color: var(--primary); }
+
+        .btn {
+            background: linear-gradient(135deg, #0284c7, var(--primary));
+            color: #090e17;
+            font-weight: 800;
+            border: none;
+            padding: 11px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            touch-action: manipulation;
+        }
+        .btn:hover { opacity: 0.9; transform: translateY(-1px); }
+
+        /* Output Citation Display */
+        .citation-box {
+            background: #05080e;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 14px;
+            font-size: 0.95rem;
+            line-height: 1.8;
+            position: relative;
+        }
+
+        .citation-entry {
+            padding-right: 25px;
+            text-indent: -25px; /* Hanging indent style of APA */
+            color: #f1f5f9;
+        }
+
+        .in-text-tag {
+            background: rgba(56, 189, 248, 0.15);
+            color: var(--primary);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.85rem;
+            display: inline-block;
+            margin-top: 6px;
+        }
+
+        /* CRAAP Test Grid */
+        .craap-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 12px;
+        }
+
+        .craap-item {
+            background: #090e17;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .craap-label {
+            font-size: 0.85rem;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        input[type="range"] {
+            height: 6px;
+            accent-color: var(--primary);
+            cursor: pointer;
+            padding: 0;
+        }
+
+        /* Roadmap steps */
+        .roadmap-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+        }
+
+        .roadmap-step {
+            background: #090e17;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            position: relative;
+        }
+
+        .step-num {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: #090e17;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-title">
+            <h1>📚 المختبر الرقمي: <span class="glow">البحث ومصادر المعلومات</span></h1>
+            <p>أدوات توثيق المراجع بنظام APA 7، صياغة الفرضيات، وتقييم مصادر المعلومات - مقرر البحث 3</p>
+        </div>
+        <span class="badge">ثالث ثانوي | أ. عوضه حسن</span>
+    </header>
+
+    <div class="tab-bar">
+        <button class="tab-btn active" data-tab="tab-apa">📝 مُولّد توثيق المراجع (APA 7th)</button>
+        <button class="tab-btn" data-tab="tab-hypo">🎯 صياغة الفرضيات والمتغيرات</button>
+        <button class="tab-btn" data-tab="tab-craap">🔍 مقياس موثوقية المصادر (CRAAP)</button>
+        <button class="tab-btn" data-tab="tab-roadmap">🗺️ خريطة خطوات البحث العلمي</button>
+    </div>
+
+    <!-- 1. APA Generator -->
+    <div class="tab-content active" id="tab-apa">
+        <div class="card">
+            <h2 class="card-title">1. مولد التوثيق الأكاديمي المعتمد بنظام APA (الإصدار السابع)</h2>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px;">
+                <div>
+                    <label style="font-size: 0.85rem; margin-bottom: 4px; display: block;">نوع المصدر:</label>
+                    <select id="sourceType">
+                        <option value="book">كتاب مطبوع أو إلكتروني (Book)</option>
+                        <option value="journal">بحث في دورية / مجلة علمية (Journal Article)</option>
+                        <option value="website">موقع إلكتروني أو مقال ويب (Website)</option>
+                        <option value="thesis">رسالة ماجستير / دكتوراه (Thesis / Dissertation)</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="font-size: 0.85rem; margin-bottom: 4px; display: block;">اسم المؤلف (اللقب، ثم الاسم الأول):</label>
+                    <input type="text" id="authorInput" value="القرني، يوسف">
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px;">
+                <div>
+                    <label style="font-size: 0.85rem; margin-bottom: 4px; display: block;">سنة النشر:</label>
+                    <input type="text" id="yearInput" value="2026">
+                </div>
+                <div>
+                    <label style="font-size: 0.85rem; margin-bottom: 4px; display: block;" id="titleLabel">عنوان الكتاب أو البحث:</label>
+                    <input type="text" id="titleInput" value="أسس الذكاء الاصطناعي في التعليم الثانوي">
+                </div>
+                <div id="publisherGroup">
+                    <label style="font-size: 0.85rem; margin-bottom: 4px; display: block;" id="publisherLabel">دار النشر / اسم المجلة:</label>
+                    <input type="text" id="publisherInput" value="دار المعرفة للنشر">
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <button class="btn" id="generateApaBtn">⚡ توليد التوثيق بنظام APA</button>
+                <button class="btn" id="copyCitationBtn" style="background: #1e293b; color: var(--primary); border: 1px solid var(--border);">📋 نسخ التوثيق</button>
+            </div>
+
+            <div class="citation-box">
+                <span style="font-size: 0.8rem; color: var(--muted); display: block; margin-bottom: 6px;">التوثيق في قائمة المراجع النهائية (References List):</span>
+                <div class="citation-entry" id="apaResultText">...</div>
+                
+                <span style="font-size: 0.8rem; color: var(--muted); display: block; margin-top: 12px; margin-bottom: 4px;">الاستشهاد داخل المتن (In-Text Citation):</span>
+                <div class="in-text-tag" id="inTextResult">...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. Hypotheses & Variables Builder -->
+    <div class="tab-content" id="tab-hypo">
+        <div class="card">
+            <h2 class="card-title">2. بناء وصياغة أسئلة البحث والفرضيات العلمية</h2>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px;">
+                <div>
+                    <label style="font-size: 0.85rem; margin-bottom: 4px; display: block;">المتغير المستقل (Independent Variable):</label>
+                    <input type="text" id="indepVar" value="استخدام المحاكيات الرقمية التفاعلية">
+                </div>
+                <div>
+                    <label style="font-size: 0.85rem; margin-bottom: 4px; display: block;">المتغير التابع (Dependent Variable):</label>
+                    <input type="text" id="depVar" value="التحصيل الدراسي لطلاب المرحلة الثانوية">
+                </div>
+            </div>
+
+            <div>
+                <label style="font-size: 0.85rem; margin-bottom: 4px; display: block;">نوع الفرضية المراد صياغتها:</label>
+                <select id="hypoType">
+                    <option value="direct">فرضية بحثية بديلة موجهة (توجد علاقة ذات دلالة إحصائية موجبة)</option>
+                    <option value="nondirect">فرضية بحثية غير موجهة (يوجد فرق دال إحصائياً دون تحديد اتجاه)</option>
+                    <option value="null">الفرضية الصفرية (Null Hypothesis H₀ - لا توجد فروق ذات دلالة)</option>
+                </select>
+            </div>
+
+            <button class="btn" id="buildHypoBtn">✨ صياغة الفرضية وسؤال البحث</button>
+
+            <div class="citation-box" id="hypoResultBox" style="line-height: 1.8;">
+                <!-- Result rendered here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. CRAAP Evaluation -->
+    <div class="tab-content" id="tab-craap">
+        <div class="card">
+            <h2 class="card-title">3. مقياس تقييم موثوقية مصادر الإنترنت (CRAAP Test)</h2>
+            <p style="font-size: 0.85rem; color: var(--muted);">قيم المصدر من 1 إلى 10 في كل معيار لقياس مدى ملاءمته للبحث الأكاديمي:</p>
+
+            <div class="craap-grid">
+                <div class="craap-item">
+                    <div class="craap-label"><span>1. الحداثة (Currency):</span> <span id="c1Val" style="color: var(--primary);">8</span></div>
+                    <input type="range" id="c1" min="1" max="10" value="8">
+                    <span style="font-size: 0.72rem; color: var(--muted);">تاريخ نشر وتحديث المعلومة.</span>
+                </div>
+                <div class="craap-item">
+                    <div class="craap-label"><span>2. الصلة (Relevance):</span> <span id="c2Val" style="color: var(--primary);">9</span></div>
+                    <input type="range" id="c2" min="1" max="10" value="9">
+                    <span style="font-size: 0.72rem; color: var(--muted);">ارتباط المحتوى مباشرة بسؤال بحثك.</span>
+                </div>
+                <div class="craap-item">
+                    <div class="craap-label"><span>3. الثقة والمصدر (Authority):</span> <span id="c3Val" style="color: var(--primary);">8</span></div>
+                    <input type="range" id="c3" min="1" max="10" value="8">
+                    <span style="font-size: 0.72rem; color: var(--muted);">مكانة المؤلف والجهة الناشرة العلمية.</span>
+                </div>
+                <div class="craap-item">
+                    <div class="craap-label"><span>4. الدقة والمصداقية (Accuracy):</span> <span id="c4Val" style="color: var(--primary);">9</span></div>
+                    <input type="range" id="c4" min="1" max="10" value="9">
+                    <span style="font-size: 0.72rem; color: var(--muted);">وجود أدلة ومراجع داعمة للمحتوى.</span>
+                </div>
+                <div class="craap-item">
+                    <div class="craap-label"><span>5. الغرض والموضوعية (Purpose):</span> <span id="c5Val" style="color: var(--primary);">8</span></div>
+                    <input type="range" id="c5" min="1" max="10" value="8">
+                    <span style="font-size: 0.72rem; color: var(--muted);">الهدف علمي محايد وليس إعلاناً تجارياً.</span>
+                </div>
+            </div>
+
+            <div style="background: #05080e; border: 1px solid var(--border); border-radius: 12px; padding: 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                <div>
+                    <span style="font-size: 0.85rem; color: var(--muted);">درجة الموثوقية الكلية:</span>
+                    <div style="font-size: 1.5rem; font-weight: bold; color: var(--success);" id="totalScoreTxt">42 / 50 (84%)</div>
+                </div>
+                <div style="background: rgba(16, 185, 129, 0.2); border: 1px solid var(--success); color: #6ee7b7; padding: 6px 14px; border-radius: 20px; font-weight: bold; font-size: 0.85rem;" id="verdictTxt">
+                    ⭐ مصدر أكاديمي موثوق ومعتمد
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. Research Roadmap -->
+    <div class="tab-content" id="tab-roadmap">
+        <div class="card">
+            <h2 class="card-title">4. خريطة طريق خطوات إعداد البحث العلمي المنهجي</h2>
+            
+            <div class="roadmap-container">
+                <div class="roadmap-step">
+                    <div class="step-num">1</div>
+                    <strong style="color: var(--primary);">تحديد مشكلة البحث</strong>
+                    <p style="font-size: 0.8rem; color: var(--muted);">الشعور بالمشكلة، صياغتها بعبارة واضحة، وتحديد الأهداف والأهمية والحدود.</p>
+                </div>
+                <div class="roadmap-step">
+                    <div class="step-num">2</div>
+                    <strong style="color: var(--primary);">الدراسات السابقة</strong>
+                    <p style="font-size: 0.8rem; color: var(--muted);">مسح الإنتاج الفكري في المكتبات الرقمية وقواعد البيانات، وتحليل الفجوة البحثية.</p>
+                </div>
+                <div class="roadmap-step">
+                    <div class="step-num">3</div>
+                    <strong style="color: var(--primary);">منهجية وأدوات البحث</strong>
+                    <p style="font-size: 0.8rem; color: var(--muted);">اختيار المنهج (وصفي / تجريبي)، تحديد مجتمع البحث وعينته، وبناء الاستبانة.</p>
+                </div>
+                <div class="roadmap-step">
+                    <div class="step-num">4</div>
+                    <strong style="color: var(--primary);">جمع وتحليل البيانات</strong>
+                    <p style="font-size: 0.8rem; color: var(--muted);">تفريغ استجابات العينة، المعالجة الإحصائية، واختبار صحة الفرضيات.</p>
+                </div>
+                <div class="roadmap-step">
+                    <div class="step-num">5</div>
+                    <strong style="color: var(--primary);">النتائج والتوثيق</strong>
+                    <p style="font-size: 0.8rem; color: var(--muted);">عرض ومناقشة النتائج، تقديم التوصيات، وتوثيق المراجع بنظام APA 7th.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tab switching
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        const tabContents = document.querySelectorAll('.tab-content');
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                tabBtns.forEach(b => b.classList.remove('active'));
+                tabContents.forEach(c => c.classList.remove('active'));
+                btn.classList.add('active');
+                document.getElementById(btn.dataset.tab).classList.add('active');
+            });
+        });
+
+        // 1. APA Generator Logic
+        const sourceType = document.getElementById('sourceType');
+        const authorInput = document.getElementById('authorInput');
+        const yearInput = document.getElementById('yearInput');
+        const titleInput = document.getElementById('titleInput');
+        const publisherInput = document.getElementById('publisherInput');
+        const generateApaBtn = document.getElementById('generateApaBtn');
+        const copyCitationBtn = document.getElementById('copyCitationBtn');
+        const apaResultText = document.getElementById('apaResultText');
+        const inTextResult = document.getElementById('inTextResult');
+
+        function generateCitation() {
+            const type = sourceType.value;
+            const author = authorInput.value.trim();
+            const year = yearInput.value.trim() || 'د.ت';
+            const title = titleInput.value.trim();
+            const pub = publisherInput.value.trim();
+
+            let ref = '';
+            if (type === 'book') {
+                ref = `${author} (${year}). <em>${title}</em>. ${pub}.`;
+            } else if (type === 'journal') {
+                ref = `${author} (${year}). ${title}. <em>${pub}</em>، 15(2)، 45-60.`;
+            } else if (type === 'website') {
+                ref = `${author} (${year}). <em>${title}</em>. ${pub}. استُرجع من https://example.com`;
+            } else {
+                ref = `${author} (${year}). <em>${title}</em> [رسالة ماجستير غير منشورة]. ${pub}.`;
+            }
+
+            apaResultText.innerHTML = ref;
+
+            // In-text citation extraction
+            const authorLast = author.includes('،') ? author.split('،')[0].trim() : author.split(' ')[0].trim();
+            inTextResult.textContent = `(${authorLast}، ${year})  أو  أشار ${authorLast} (${year})`;
+        }
+
+        generateApaBtn.addEventListener('click', generateCitation);
+        copyCitationBtn.addEventListener('click', () => {
+            const textToCopy = apaResultText.textContent;
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                copyCitationBtn.textContent = '✅ تم النسخ بنجاح!';
+                setTimeout(() => copyCitationBtn.textContent = '📋 نسخ التوثيق', 1500);
+            });
+        });
+
+        sourceType.addEventListener('change', () => {
+            if (sourceType.value === 'website') {
+                document.getElementById('publisherLabel').textContent = 'اسم الموقع / المنظمة:';
+            } else if (sourceType.value === 'journal') {
+                document.getElementById('publisherLabel').textContent = 'اسم المجلة والدورية العلمية:';
+            } else {
+                document.getElementById('publisherLabel').textContent = 'دار النشر / الجامعة:';
+            }
+            generateCitation();
+        });
+
+        generateCitation();
+
+        // 2. Hypotheses Builder
+        const indepVar = document.getElementById('indepVar');
+        const depVar = document.getElementById('depVar');
+        const hypoType = document.getElementById('hypoType');
+        const buildHypoBtn = document.getElementById('buildHypoBtn');
+        const hypoResultBox = document.getElementById('hypoResultBox');
+
+        function buildHypothesis() {
+            const ind = indepVar.value.trim();
+            const dep = depVar.value.trim();
+            const type = hypoType.value;
+
+            let question = `<strong>سؤال البحث الرئيسي:</strong><br>ما أثر ${ind} على ${dep}؟<br><br>`;
+            let hypo = '';
+
+            if (type === 'direct') {
+                hypo = `<strong>الفرضية البحثية الموجهة (Alternative Hypothesis):</strong><br>توجد علاقة ذات دلالة إحصائية موجبة عند مستوى الدلالة (α ≤ 0.05) بين ${ind} و${dep}.`;
+            } else if (type === 'nondirect') {
+                hypo = `<strong>الفرضية غير الموجهة:</strong><br>يوجد فرق دال إحصائياً في ${dep} يُعزى إلى ${ind}.`;
+            } else {
+                hypo = `<strong>الفرضية الصفرية (Null Hypothesis H₀):</strong><br>لا توجد فروق ذات دلالة إحصائية عند مستوى الدلالة (α ≤ 0.05) في ${dep} تُعزى إلى ${ind}.`;
+            }
+
+            hypoResultBox.innerHTML = question + hypo;
+        }
+
+        buildHypoBtn.addEventListener('click', buildHypothesis);
+        buildHypothesis();
+
+        // 3. CRAAP Evaluation
+        const cSliders = [document.getElementById('c1'), document.getElementById('c2'), document.getElementById('c3'), document.getElementById('c4'), document.getElementById('c5')];
+        const cVals = [document.getElementById('c1Val'), document.getElementById('c2Val'), document.getElementById('c3Val'), document.getElementById('c4Val'), document.getElementById('c5Val')];
+        const totalScoreTxt = document.getElementById('totalScoreTxt');
+        const verdictTxt = document.getElementById('verdictTxt');
+
+        function updateCraap() {
+            let sum = 0;
+            cSliders.forEach((s, idx) => {
+                const v = parseInt(s.value);
+                cVals[idx].textContent = v;
+                sum += v;
+            });
+            const pct = Math.round((sum / 50) * 100);
+            totalScoreTxt.textContent = `${sum} / 50 (${pct}%)`;
+
+            if (sum >= 40) {
+                verdictTxt.textContent = '⭐ مصدر أكاديمي موثوق ومعتمد';
+                verdictTxt.style.borderColor = 'var(--success)';
+                verdictTxt.style.color = '#6ee7b7';
+                verdictTxt.style.background = 'rgba(16, 185, 129, 0.2)';
+            } else if (sum >= 30) {
+                verdictTxt.textContent = '⚠️ مصدر متوسط (يحتاج تعزيزاً بمصادر أخرى)';
+                verdictTxt.style.borderColor = 'var(--warning)';
+                verdictTxt.style.color = '#fde68a';
+                verdictTxt.style.background = 'rgba(245, 158, 11, 0.2)';
+            } else {
+                verdictTxt.textContent = '❌ مصدر ضعيف أو غير موثوق علمياً';
+                verdictTxt.style.borderColor = '#ef4444';
+                verdictTxt.style.color = '#fca5a5';
+                verdictTxt.style.background = 'rgba(239, 68, 68, 0.2)';
+            }
+        }
+
+        cSliders.forEach(s => s.addEventListener('input', updateCraap));
+        updateCraap();
+    </script>
+</body>
+</html>
